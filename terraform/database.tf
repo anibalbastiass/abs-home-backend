@@ -20,11 +20,11 @@ resource "digitalocean_database_user" "abs_user" {
     name       = "abs_admin"
 }
 
-# Managed Redis 7 Cluster (BullMQ & Cache)
+# Managed Valkey / Redis Cluster (BullMQ & Cache)
 resource "digitalocean_database_cluster" "redis" {
     name       = "abs-redis-${var.environment}"
-    engine     = "redis"
-    version    = "7"
+    engine     = "valkey"
+    version    = "8"
     size       = "db-s-1vcpu-1gb"
     region     = var.region
     node_count = 1
