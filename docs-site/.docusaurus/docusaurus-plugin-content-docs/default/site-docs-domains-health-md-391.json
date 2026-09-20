@@ -1,0 +1,28 @@
+{
+  "id": "domains/health",
+  "title": "💓 Health & Diagnostics Domain",
+  "description": "The Health Domain verifies system availability, database connectivity, Redis cache latency, Kafka event broker status, and IoT vendor adapter reachability.",
+  "source": "@site/docs/domains/health.md",
+  "sourceDirName": "domains",
+  "slug": "/domains/health",
+  "permalink": "/docs/domains/health",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/anibalbastiass/abs-home-backend/tree/main/docs-site/docs/domains/health.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "health",
+    "title": "💓 Health & Diagnostics Domain",
+    "sidebar_label": "💓 Health & Diagnostics"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "🛡️ Security",
+    "permalink": "/docs/domains/security"
+  },
+  "next": {
+    "title": "🗄️ Database & Prisma",
+    "permalink": "/docs/infrastructure/database-and-prisma"
+  }
+}

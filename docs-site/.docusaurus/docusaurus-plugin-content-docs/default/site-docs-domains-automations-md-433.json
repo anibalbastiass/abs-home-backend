@@ -1,0 +1,28 @@
+{
+  "id": "domains/automations",
+  "title": "⚡ Automations Domain",
+  "description": "The Automations Domain enables event-driven and schedule-based home automation rules. Automations can be triggered by device state changes, sensor triggers, cron schedules, or domain events (e.g. motion detection or energy threshold crossings).",
+  "source": "@site/docs/domains/automations.md",
+  "sourceDirName": "domains",
+  "slug": "/domains/automations",
+  "permalink": "/docs/domains/automations",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/anibalbastiass/abs-home-backend/tree/main/docs-site/docs/domains/automations.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "automations",
+    "title": "⚡ Automations Domain",
+    "sidebar_label": "⚡ Automations"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "🎬 Scenes Domain",
+    "permalink": "/docs/domains/scenes"
+  },
+  "next": {
+    "title": "⚡ Three-Phase Energy",
+    "permalink": "/docs/domains/three-phase-energy"
+  }
+}

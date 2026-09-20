@@ -1,0 +1,27 @@
+{
+  "id": "architecture/kafka-events",
+  "title": "📡 Kafka / Redpanda Domain Event Streaming",
+  "description": "Domain events provide asynchronous decoupled communication between the IoT control plane, background automation consumers, and mobile push notification services.",
+  "source": "@site/docs/architecture/kafka-events.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/kafka-events",
+  "permalink": "/docs/architecture/kafka-events",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/anibalbastiass/abs-home-backend/tree/main/docs-site/docs/architecture/kafka-events.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "⚡ BullMQ IoT Rate Limiting",
+    "permalink": "/docs/architecture/rate-limiting-queues"
+  },
+  "next": {
+    "title": "⚠️ RFC 7807 Problem Details Error Handling",
+    "permalink": "/docs/architecture/error-handling"
+  }
+}

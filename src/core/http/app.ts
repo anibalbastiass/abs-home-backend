@@ -6,6 +6,7 @@ import Router from '@koa/router';
 import { logger } from '../logger/logger';
 import { errorMiddleware } from '../errors/error-middleware';
 import { generateOpenApiDocument } from '../openapi/registry';
+import { getSwaggerHtml } from '../openapi/swagger-ui';
 import { AppContainer, createContainer } from '../di/container';
 import { createHealthRouter } from '@/domains/health/routes';
 import { createDeviceRouter } from '@/domains/devices/routes';
@@ -17,8 +18,12 @@ import { createSecurityRouter } from '@/domains/security/routes';
 export const createApp = (container: AppContainer = createContainer()): Koa => {
     const app = new Koa();
 
-    // 1. Security Headers
-    app.use(helmet());
+    // 1. Security Headers (relaxed CSP for Swagger UI CDN assets)
+    app.use(
+        helmet({
+            contentSecurityPolicy: false,
+        }),
+    );
 
     // 2. CORS
     app.use(
@@ -63,10 +68,17 @@ export const createApp = (container: AppContainer = createContainer()): Koa => {
         }),
     );
 
-    // 6. Root & Health Check Routes (outside API prefix for cloud health monitors)
-    const healthRouter = createHealthRouter(container.healthController);
+    // 6. Root & Health Check & Swagger UI Routes
     const rootRouter = new Router();
+    const healthRouter = createHealthRouter(container.healthController);
     rootRouter.use(healthRouter.routes()).use(healthRouter.allowedMethods());
+
+    // Swagger UI at /docs
+    rootRouter.get('/docs', (ctx: Context) => {
+        ctx.status = 200;
+        ctx.type = 'text/html; charset=utf-8';
+        ctx.body = getSwaggerHtml(`${container.env.API_PREFIX}/openapi.json`);
+    });
 
     // 7. API V1 Router
     const apiV1Router = new Router({ prefix: container.env.API_PREFIX });
@@ -79,7 +91,14 @@ export const createApp = (container: AppContainer = createContainer()): Koa => {
         ctx.body = spec;
     });
 
-    // Mount Module Routers created with DI controllers
+    // Swagger UI at /api/v1/docs
+    apiV1Router.get('/docs', (ctx: Context) => {
+        ctx.status = 200;
+        ctx.type = 'text/html; charset=utf-8';
+        ctx.body = getSwaggerHtml(`${container.env.API_PREFIX}/openapi.json`);
+    });
+
+    // Mount Domain Routers created with DI controllers
     const deviceRouter = createDeviceRouter(container.deviceController);
     const sceneRouter = createSceneRouter(container.sceneController);
     const automationRouter = createAutomationRouter(container.automationController);

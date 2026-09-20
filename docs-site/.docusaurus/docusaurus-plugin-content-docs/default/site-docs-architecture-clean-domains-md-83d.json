@@ -1,0 +1,27 @@
+{
+  "id": "architecture/clean-domains",
+  "title": "🏛️ Clean Architecture & Domains",
+  "description": "The ABS Smart Home Backend is structured around strict Domain Boundaries (src/domains/) to guarantee isolation, maintainability, and testability.",
+  "source": "@site/docs/architecture/clean-domains.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/clean-domains",
+  "permalink": "/docs/architecture/clean-domains",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/anibalbastiass/abs-home-backend/tree/main/docs-site/docs/architecture/clean-domains.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "💻 Local Setup & Development",
+    "permalink": "/docs/getting-started/local-setup"
+  },
+  "next": {
+    "title": "💉 Dependency Injection & Container",
+    "permalink": "/docs/architecture/dependency-injection"
+  }
+}

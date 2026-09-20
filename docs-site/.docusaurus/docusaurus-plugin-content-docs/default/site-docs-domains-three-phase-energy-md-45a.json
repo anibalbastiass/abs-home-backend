@@ -1,0 +1,28 @@
+{
+  "id": "domains/three-phase-energy",
+  "title": "⚡ Three-Phase Energy Monitoring",
+  "description": "ABS Smart Home Backend provides precision Three-Phase Electrical Monitoring (L1, L2, L3) with real-time phase balance calculations, total active power (kW), and power factor metrics.",
+  "source": "@site/docs/domains/three-phase-energy.md",
+  "sourceDirName": "domains",
+  "slug": "/domains/three-phase-energy",
+  "permalink": "/docs/domains/three-phase-energy",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/anibalbastiass/abs-home-backend/tree/main/docs-site/docs/domains/three-phase-energy.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "three-phase-energy",
+    "title": "⚡ Three-Phase Energy Monitoring",
+    "sidebar_label": "⚡ Three-Phase Energy"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "⚡ Automations",
+    "permalink": "/docs/domains/automations"
+  },
+  "next": {
+    "title": "🛡️ Security",
+    "permalink": "/docs/domains/security"
+  }
+}

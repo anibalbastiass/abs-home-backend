@@ -1,0 +1,123 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs",
+          "mainDocId": "intro",
+          "docs": [
+            {
+              "id": "api/openapi-spec",
+              "path": "/docs/api/openapi-spec",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "api/swagger-ui",
+              "path": "/docs/api/swagger-ui",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "architecture/clean-domains",
+              "path": "/docs/architecture/clean-domains",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "architecture/dependency-injection",
+              "path": "/docs/architecture/dependency-injection",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "architecture/error-handling",
+              "path": "/docs/architecture/error-handling",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "architecture/kafka-events",
+              "path": "/docs/architecture/kafka-events",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "architecture/rate-limiting-queues",
+              "path": "/docs/architecture/rate-limiting-queues",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "domains/automations",
+              "path": "/docs/domains/automations",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "domains/devices-and-adapters",
+              "path": "/docs/domains/devices-and-adapters",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "domains/health",
+              "path": "/docs/domains/health",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "domains/scenes",
+              "path": "/docs/domains/scenes",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "domains/security",
+              "path": "/docs/domains/security",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "domains/three-phase-energy",
+              "path": "/docs/domains/three-phase-energy",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "getting-started/local-setup",
+              "path": "/docs/getting-started/local-setup",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "getting-started/overview",
+              "path": "/docs/getting-started/overview",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "infrastructure/cicd-deployment",
+              "path": "/docs/infrastructure/cicd-deployment",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "infrastructure/database-and-prisma",
+              "path": "/docs/infrastructure/database-and-prisma",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "infrastructure/terraform",
+              "path": "/docs/infrastructure/terraform",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "intro",
+              "path": "/docs/intro",
+              "sidebar": "docsSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "docsSidebar": {
+              "link": {
+                "path": "/docs/intro",
+                "label": "🌟 Overview"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

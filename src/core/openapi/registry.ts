@@ -23,7 +23,7 @@ export const generateOpenApiDocument = (): ReturnType<OpenApiGeneratorV31['gener
         openapi: '3.1.0',
         info: {
             title: 'ABS Smart Home Backend Gateway API',
-            version: '1.0.0',
+            version: '1.1.0',
             description:
                 'Unified IoT control plane, automation engine, and energy monitoring backend for Philips Hue, Google Nest, SwitchBot, Ring, and Amazon Blink.',
             contact: {

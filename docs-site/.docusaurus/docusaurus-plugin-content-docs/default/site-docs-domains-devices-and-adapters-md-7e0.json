@@ -1,0 +1,27 @@
+{
+  "id": "domains/devices-and-adapters",
+  "title": "📱 Devices & IoT Vendor Adapters",
+  "description": "The devices domain manages the fleet of physical and virtual smart devices across multiple vendors.",
+  "source": "@site/docs/domains/devices-and-adapters.md",
+  "sourceDirName": "domains",
+  "slug": "/domains/devices-and-adapters",
+  "permalink": "/docs/domains/devices-and-adapters",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/anibalbastiass/abs-home-backend/tree/main/docs-site/docs/domains/devices-and-adapters.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "⚠️ RFC 7807 Problem Details Error Handling",
+    "permalink": "/docs/architecture/error-handling"
+  },
+  "next": {
+    "title": "🎬 Scenes Domain",
+    "permalink": "/docs/domains/scenes"
+  }
+}

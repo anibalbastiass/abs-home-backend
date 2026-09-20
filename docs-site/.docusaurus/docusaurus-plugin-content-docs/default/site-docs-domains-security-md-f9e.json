@@ -1,0 +1,28 @@
+{
+  "id": "domains/security",
+  "title": "🛡️ Security & Perimeter Domain",
+  "description": "The Security Domain orchestrates whole-home alarm states, access logs, camera feeds (Ring & Blink), and door sensors.",
+  "source": "@site/docs/domains/security.md",
+  "sourceDirName": "domains",
+  "slug": "/domains/security",
+  "permalink": "/docs/domains/security",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/anibalbastiass/abs-home-backend/tree/main/docs-site/docs/domains/security.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "security",
+    "title": "🛡️ Security & Perimeter Domain",
+    "sidebar_label": "🛡️ Security"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "⚡ Three-Phase Energy",
+    "permalink": "/docs/domains/three-phase-energy"
+  },
+  "next": {
+    "title": "💓 Health & Diagnostics",
+    "permalink": "/docs/domains/health"
+  }
+}

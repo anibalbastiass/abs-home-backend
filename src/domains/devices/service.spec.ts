@@ -8,7 +8,7 @@ import { BlinkAdapter } from './adapters/blink.adapter';
 import { QueueManager } from '@/core/queues/queue-manager';
 import { KafkaClientManager } from '@/core/events/kafka-client';
 import { NotFoundError } from '@/core/errors/app-error';
-import { createDeviceFixture, FIXTURE_IDS } from '@/test/fixtures';
+import { createDeviceFixture } from '@/test/fixtures';
 
 describe('DeviceServiceImpl', () => {
     const mockPrisma: any = {

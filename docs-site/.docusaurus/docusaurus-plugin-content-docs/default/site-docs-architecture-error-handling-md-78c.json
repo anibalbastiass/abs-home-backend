@@ -1,0 +1,27 @@
+{
+  "id": "architecture/error-handling",
+  "title": "⚠️ RFC 7807 Problem Details Error Handling",
+  "description": "All HTTP errors follow the RFC 7807 (Problem Details for HTTP APIs) specification with Content-Type: application/problem+json.",
+  "source": "@site/docs/architecture/error-handling.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/error-handling",
+  "permalink": "/docs/architecture/error-handling",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/anibalbastiass/abs-home-backend/tree/main/docs-site/docs/architecture/error-handling.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "📡 Kafka / Redpanda Domain Event Streaming",
+    "permalink": "/docs/architecture/kafka-events"
+  },
+  "next": {
+    "title": "📱 Devices & IoT Vendor Adapters",
+    "permalink": "/docs/domains/devices-and-adapters"
+  }
+}

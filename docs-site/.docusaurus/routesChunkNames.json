@@ -1,0 +1,107 @@
+{
+  "/blog-98b": {
+    "__comp": "a6aa9e1f",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [],
+    "__props": "c15d9823"
+  },
+  "/docs-7e1": {
+    "__comp": "5e95c892",
+    "__context": {
+      "plugin": "aba21aa0"
+    }
+  },
+  "/docs-206": {
+    "__comp": "a7bd4aaa",
+    "__props": "0058b4c6"
+  },
+  "/docs-35b": {
+    "__comp": "a94703ab"
+  },
+  "/docs/api/openapi-spec-2a8": {
+    "__comp": "17896441",
+    "content": "d9eab0fd"
+  },
+  "/docs/api/swagger-ui-4af": {
+    "__comp": "17896441",
+    "content": "e3274511"
+  },
+  "/docs/architecture/clean-domains-5f0": {
+    "__comp": "17896441",
+    "content": "83d5ca14"
+  },
+  "/docs/architecture/dependency-injection-b9f": {
+    "__comp": "17896441",
+    "content": "18b3f752"
+  },
+  "/docs/architecture/error-handling-467": {
+    "__comp": "17896441",
+    "content": "78c60ed3"
+  },
+  "/docs/architecture/kafka-events-a15": {
+    "__comp": "17896441",
+    "content": "e8041447"
+  },
+  "/docs/architecture/rate-limiting-queues-1f2": {
+    "__comp": "17896441",
+    "content": "04a8b3cf"
+  },
+  "/docs/domains/automations-00c": {
+    "__comp": "17896441",
+    "content": "43339255"
+  },
+  "/docs/domains/devices-and-adapters-677": {
+    "__comp": "17896441",
+    "content": "7e0186a6"
+  },
+  "/docs/domains/health-baf": {
+    "__comp": "17896441",
+    "content": "391338eb"
+  },
+  "/docs/domains/scenes-cb4": {
+    "__comp": "17896441",
+    "content": "a7368d03"
+  },
+  "/docs/domains/security-319": {
+    "__comp": "17896441",
+    "content": "f9ebcc15"
+  },
+  "/docs/domains/three-phase-energy-9f3": {
+    "__comp": "17896441",
+    "content": "45a1b4b1"
+  },
+  "/docs/getting-started/local-setup-5c8": {
+    "__comp": "17896441",
+    "content": "478cebeb"
+  },
+  "/docs/getting-started/overview-659": {
+    "__comp": "17896441",
+    "content": "7a96ca3d"
+  },
+  "/docs/infrastructure/cicd-deployment-be5": {
+    "__comp": "17896441",
+    "content": "7de35431"
+  },
+  "/docs/infrastructure/database-and-prisma-f12": {
+    "__comp": "17896441",
+    "content": "46e157a4"
+  },
+  "/docs/infrastructure/terraform-ce6": {
+    "__comp": "17896441",
+    "content": "585b7486"
+  },
+  "/docs/intro-058": {
+    "__comp": "17896441",
+    "content": "0e384e19"
+  },
+  "/-e5f": {
+    "__comp": "1df93b7f",
+    "__context": {
+      "plugin": "a7456010"
+    },
+    "config": "5e9f5e1a"
+  }
+}
