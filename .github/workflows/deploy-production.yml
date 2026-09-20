@@ -28,9 +28,7 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DigitalOcean Container Registry (DOCR)
-        run: |
-          mkdir -p ~/.docker
-          curl -fsSL -H "Authorization: Bearer ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" "https://api.digitalocean.com/v2/registry/docker-credentials?expiry_seconds=1200&read_write=true" > ~/.docker/config.json
+        run: doctl registry login --expiry-seconds 1200
 
       - name: Build and Push Production Images
         run: |
