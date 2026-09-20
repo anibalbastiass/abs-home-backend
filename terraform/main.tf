@@ -71,16 +71,16 @@ resource "digitalocean_app" "backend_gateway" {
                 type  = "SECRET"
             }
 
-            # Database Connection Strings (referencing managed clusters)
+            # Database Connection Strings (referencing managed clusters with credentials)
             env {
                 key   = "DATABASE_URL"
-                value = digitalocean_database_cluster.postgres.uri
+                value = "postgresql://${digitalocean_database_cluster.postgres.user}:${digitalocean_database_cluster.postgres.password}@${digitalocean_database_cluster.postgres.host}:${digitalocean_database_cluster.postgres.port}/${digitalocean_database_db.abs_database.name}?sslmode=require"
                 type  = "SECRET"
             }
 
             env {
                 key   = "REDIS_URL"
-                value = digitalocean_database_cluster.redis.uri
+                value = "rediss://:${digitalocean_database_cluster.redis.password}@${digitalocean_database_cluster.redis.host}:${digitalocean_database_cluster.redis.port}"
                 type  = "SECRET"
             }
 
