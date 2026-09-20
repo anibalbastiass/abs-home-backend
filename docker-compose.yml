@@ -1,0 +1,71 @@
+services:
+  # PostgreSQL 16 Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: abs_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: abs_admin
+      POSTGRES_PASSWORD: abs_password_secure
+      POSTGRES_DB: abs_smarthome
+    ports:
+      - "5432:5432"
+    volumes:
+      - abs_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U abs_admin -d abs_smarthome"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis 7 (Caching, Rate Limiting & BullMQ Queues)
+  redis:
+    image: redis:7-alpine
+    container_name: abs_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - abs_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redpanda (Single-Node Kafka-compatible Event Streaming)
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.1
+    container_name: abs_redpanda
+    restart: always
+    command:
+      - redpanda start
+      - --smp 1
+      - --memory 512M
+      - --overprovisioned
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr 0.0.0.0:8082
+      - --advertise-pandaproxy-addr localhost:8082
+    ports:
+      - "19092:19092"
+      - "8082:8082"
+    volumes:
+      - abs_redpanda_data:/var/lib/redpanda/data
+
+  # Redpanda Console (Web UI for Kafka event inspection)
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:v2.7.2
+    container_name: abs_redpanda_console
+    restart: always
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+    ports:
+      - "8085:8080"
+    depends_on:
+      - redpanda
+
+volumes:
+  abs_postgres_data:
+  abs_redis_data:
+  abs_redpanda_data:

@@ -1,0 +1,40 @@
+name: CI Quality Gate
+
+on:
+  push:
+    branches: [ main, staging, 'feature/**' ]
+  pull_request:
+    branches: [ main, staging ]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run Typecheck
+        run: npm run typecheck
+
+      - name: Run Unit & Integration Tests with Coverage
+        run: npm run test:coverage
+
+      - name: Verify 80% Coverage Gate
+        run: |
+          COVERAGE=$(npm run test:coverage -- --coverage.reporter=text-summary | grep -i "Lines" | awk '{print $3}' | tr -d '%')
+          echo "Current Code Coverage: ${COVERAGE}%"
+
+      - name: Test Docker Container Build
+        run: docker build -t abs-backend:test .

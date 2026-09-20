@@ -1,0 +1,208 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+  GUEST
+}
+
+enum DeviceVendor {
+  HUE
+  NEST
+  SWITCHBOT
+  RING
+  BLINK
+  ENERGY_METER
+  CUSTOM
+}
+
+enum DeviceType {
+  LIGHT
+  THERMOSTAT
+  CURTAIN
+  BOT
+  CAMERA
+  DOORBELL
+  PLUG
+  SENSOR
+  ENERGY_METER
+}
+
+enum ArmStatus {
+  DISARMED
+  ARMED_HOME
+  ARMED_AWAY
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  role      Role     @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  homes     Home[]
+}
+
+model Home {
+  id          String           @id @default(uuid())
+  name        String
+  timezone    String           @default("America/Santiago")
+  address     String?
+  ownerId     String
+  owner       User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  rooms       Room[]
+  devices     Device[]
+  scenes      Scene[]
+  automations AutomationRule[]
+  zones       SecurityZone[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  name      String
+  icon      String   @default("living_room")
+  homeId    String
+  home      Home     @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  devices   Device[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Device {
+  id           String       @id @default(uuid())
+  externalId   String
+  vendor       DeviceVendor
+  type         DeviceType
+  name         String
+  roomId       String?
+  room         Room?        @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  homeId       String
+  home         Home         @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  state        Json         @default("{}")
+  capabilities Json         @default("[]")
+  isOnline     Boolean      @default(true)
+  lastSeenAt   DateTime     @default(now())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  actions      SceneAction[]
+
+  @@unique([vendor, externalId])
+}
+
+model Scene {
+  id        String        @id @default(uuid())
+  name      String
+  icon      String        @default("scene_default")
+  homeId    String
+  home      Home          @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  actions   SceneAction[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model SceneAction {
+  id        String   @id @default(uuid())
+  sceneId   String
+  scene     Scene    @relation(fields: [sceneId], references: [id], onDelete: Cascade)
+  deviceId  String
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  action    String
+  payload   Json     @default("{}")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model AutomationRule {
+  id               String                    @id @default(uuid())
+  name             String
+  description      String?
+  isEnabled        Boolean                   @default(true)
+  triggerType      String                    // e.g. "TIME_CRON", "DEVICE_EVENT", "ENERGY_THRESHOLD"
+  triggerCondition Json                      // Details of condition
+  actions          Json                      // Actions list to execute
+  homeId           String
+  home             Home                      @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  executionLogs    AutomationExecutionLog[]
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+}
+
+model AutomationExecutionLog {
+  id           String         @id @default(uuid())
+  automationId String
+  automation   AutomationRule @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  status       String         // "SUCCESS", "FAILED", "PARTIAL"
+  triggerEvent Json           @default("{}")
+  executedAt   DateTime       @default(now())
+  durationMs   Int
+  error        String?
+}
+
+model EnergyMetric {
+  id                 String   @id @default(uuid())
+  meterId            String
+  timestamp          DateTime @default(now())
+  phaseAVoltage      Float
+  phaseACurrent      Float
+  phaseAPower        Float
+  phaseAPowerFactor  Float
+  phaseBVoltage      Float
+  phaseBCurrent      Float
+  phaseBPower        Float
+  phaseBPowerFactor  Float
+  phaseCVoltage      Float
+  phaseCCurrent      Float
+  phaseCPower        Float
+  phaseCPowerFactor  Float
+  totalActivePower   Float
+  dailyEnergyKwh     Float
+
+  @@index([meterId, timestamp])
+}
+
+model SecurityZone {
+  id        String    @id @default(uuid())
+  name      String
+  armStatus ArmStatus @default(DISARMED)
+  homeId    String
+  home      Home      @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model SecurityIncident {
+  id           String           @id @default(uuid())
+  severity     IncidentSeverity @default(LOW)
+  alertType    String
+  sourceDevice String
+  details      Json             @default("{}")
+  resolvedAt   DateTime?
+  createdAt    DateTime         @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  resource  String
+  details   Json     @default("{}")
+  createdAt DateTime @default(now())
+}

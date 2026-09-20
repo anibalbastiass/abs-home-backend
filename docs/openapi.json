@@ -1,0 +1,3105 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "ABS Smart Home Backend Gateway API",
+        "version": "1.0.0",
+        "description": "Unified IoT control plane, automation engine, and energy monitoring backend for Philips Hue, Google Nest, SwitchBot, Ring, and Amazon Blink.",
+        "contact": {
+            "name": "ABS Smart Home Engineering",
+            "url": "https://abshome.dev"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://api.abshome.dev/api/v1",
+            "description": "Production Cloud API Gateway"
+        },
+        {
+            "url": "https://staging-api.abshome.dev/api/v1",
+            "description": "Staging Environment"
+        },
+        {
+            "url": "http://localhost:3000/api/v1",
+            "description": "Local Development Server"
+        }
+    ],
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Provide your ABS API JWT Bearer token"
+            }
+        },
+        "schemas": {
+            "HealthStatus": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "UP",
+                            "DOWN",
+                            "DEGRADED"
+                        ]
+                    },
+                    "timestamp": {
+                        "type": "string"
+                    },
+                    "uptime": {
+                        "type": "number"
+                    },
+                    "version": {
+                        "type": "string"
+                    },
+                    "environment": {
+                        "type": "string"
+                    },
+                    "components": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "enum": [
+                                        "UP",
+                                        "DOWN",
+                                        "DEGRADED"
+                                    ]
+                                },
+                                "details": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "status"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "status",
+                    "timestamp",
+                    "uptime",
+                    "version",
+                    "environment",
+                    "components"
+                ]
+            },
+            "Device": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "externalId": {
+                        "type": "string"
+                    },
+                    "vendor": {
+                        "type": "string",
+                        "enum": [
+                            "HUE",
+                            "NEST",
+                            "SWITCHBOT",
+                            "RING",
+                            "BLINK",
+                            "ENERGY_METER",
+                            "CUSTOM"
+                        ]
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "LIGHT",
+                            "THERMOSTAT",
+                            "CURTAIN",
+                            "BOT",
+                            "CAMERA",
+                            "DOORBELL",
+                            "PLUG",
+                            "SENSOR",
+                            "ENERGY_METER"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "roomId": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "homeId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "state": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "capabilities": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "isOnline": {
+                        "type": "boolean"
+                    },
+                    "lastSeenAt": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "externalId",
+                    "vendor",
+                    "type",
+                    "name",
+                    "homeId",
+                    "state",
+                    "capabilities",
+                    "isOnline",
+                    "lastSeenAt",
+                    "createdAt",
+                    "updatedAt"
+                ]
+            },
+            "DeviceCommandRequest": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Command action name, e.g., set_state, turn_on, set_temperature, close"
+                    },
+                    "params": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "default": {},
+                        "description": "Parameters for the action"
+                    }
+                },
+                "required": [
+                    "action"
+                ]
+            },
+            "DeviceCommandResponse": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "jobId": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "QUEUED",
+                            "EXECUTED"
+                        ]
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "updatedState": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    }
+                },
+                "required": [
+                    "success",
+                    "jobId",
+                    "status",
+                    "message"
+                ]
+            },
+            "Scene": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "icon": {
+                        "type": "string"
+                    },
+                    "homeId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "deviceId": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "action": {
+                                    "type": "string"
+                                },
+                                "payload": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "order": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "deviceId",
+                                "action",
+                                "payload",
+                                "order"
+                            ]
+                        }
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "icon",
+                    "homeId",
+                    "actions",
+                    "createdAt",
+                    "updatedAt"
+                ]
+            },
+            "CreateSceneRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 50
+                    },
+                    "icon": {
+                        "type": "string",
+                        "default": "scene_default"
+                    },
+                    "homeId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "deviceId": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "action": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "payload": {
+                                    "type": "object",
+                                    "additionalProperties": {},
+                                    "default": {}
+                                },
+                                "order": {
+                                    "type": "number",
+                                    "default": 0
+                                }
+                            },
+                            "required": [
+                                "deviceId",
+                                "action"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "name",
+                    "homeId",
+                    "actions"
+                ]
+            },
+            "TriggerSceneResponse": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "sceneId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "executedActionsCount": {
+                        "type": "number"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "success",
+                    "sceneId",
+                    "executedActionsCount",
+                    "message"
+                ]
+            },
+            "AutomationRule": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "isEnabled": {
+                        "type": "boolean"
+                    },
+                    "triggerType": {
+                        "type": "string"
+                    },
+                    "triggerCondition": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "deviceId": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "action": {
+                                    "type": "string"
+                                },
+                                "payload": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            },
+                            "required": [
+                                "deviceId",
+                                "action",
+                                "payload"
+                            ]
+                        }
+                    },
+                    "homeId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "isEnabled",
+                    "triggerType",
+                    "triggerCondition",
+                    "actions",
+                    "homeId",
+                    "createdAt",
+                    "updatedAt"
+                ]
+            },
+            "CreateAutomationRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "isEnabled": {
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "triggerType": {
+                        "type": "string",
+                        "enum": [
+                            "TIME_CRON",
+                            "DEVICE_EVENT",
+                            "ENERGY_THRESHOLD",
+                            "SECURITY_ALARM"
+                        ]
+                    },
+                    "triggerCondition": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "deviceId": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "action": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "payload": {
+                                    "type": "object",
+                                    "additionalProperties": {},
+                                    "default": {}
+                                }
+                            },
+                            "required": [
+                                "deviceId",
+                                "action"
+                            ]
+                        }
+                    },
+                    "homeId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "name",
+                    "triggerType",
+                    "triggerCondition",
+                    "actions",
+                    "homeId"
+                ]
+            },
+            "ExecuteAutomationResponse": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "automationId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "executedActionsCount": {
+                        "type": "number"
+                    },
+                    "durationMs": {
+                        "type": "number"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "SUCCESS",
+                            "FAILED",
+                            "PARTIAL"
+                        ]
+                    }
+                },
+                "required": [
+                    "success",
+                    "automationId",
+                    "executedActionsCount",
+                    "durationMs",
+                    "status"
+                ]
+            },
+            "PhaseMetric": {
+                "type": "object",
+                "properties": {
+                    "voltage": {
+                        "type": "number",
+                        "description": "RMS Voltage (V)"
+                    },
+                    "current": {
+                        "type": "number",
+                        "description": "RMS Current (A)"
+                    },
+                    "activePower": {
+                        "type": "number",
+                        "description": "Active Power (Watts)"
+                    },
+                    "powerFactor": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                        "description": "Power Factor (0.0 to 1.0)"
+                    }
+                },
+                "required": [
+                    "voltage",
+                    "current",
+                    "activePower",
+                    "powerFactor"
+                ]
+            },
+            "EnergyMetric": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "meterId": {
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "type": "string"
+                    },
+                    "phaseA": {
+                        "type": "object",
+                        "properties": {
+                            "voltage": {
+                                "type": "number",
+                                "description": "RMS Voltage (V)"
+                            },
+                            "current": {
+                                "type": "number",
+                                "description": "RMS Current (A)"
+                            },
+                            "activePower": {
+                                "type": "number",
+                                "description": "Active Power (Watts)"
+                            },
+                            "powerFactor": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "description": "Power Factor (0.0 to 1.0)"
+                            }
+                        },
+                        "required": [
+                            "voltage",
+                            "current",
+                            "activePower",
+                            "powerFactor"
+                        ]
+                    },
+                    "phaseB": {
+                        "type": "object",
+                        "properties": {
+                            "voltage": {
+                                "type": "number",
+                                "description": "RMS Voltage (V)"
+                            },
+                            "current": {
+                                "type": "number",
+                                "description": "RMS Current (A)"
+                            },
+                            "activePower": {
+                                "type": "number",
+                                "description": "Active Power (Watts)"
+                            },
+                            "powerFactor": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "description": "Power Factor (0.0 to 1.0)"
+                            }
+                        },
+                        "required": [
+                            "voltage",
+                            "current",
+                            "activePower",
+                            "powerFactor"
+                        ]
+                    },
+                    "phaseC": {
+                        "type": "object",
+                        "properties": {
+                            "voltage": {
+                                "type": "number",
+                                "description": "RMS Voltage (V)"
+                            },
+                            "current": {
+                                "type": "number",
+                                "description": "RMS Current (A)"
+                            },
+                            "activePower": {
+                                "type": "number",
+                                "description": "Active Power (Watts)"
+                            },
+                            "powerFactor": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "description": "Power Factor (0.0 to 1.0)"
+                            }
+                        },
+                        "required": [
+                            "voltage",
+                            "current",
+                            "activePower",
+                            "powerFactor"
+                        ]
+                    },
+                    "totalActivePower": {
+                        "type": "number",
+                        "description": "Sum of active power across all 3 phases (Watts)"
+                    },
+                    "dailyEnergyKwh": {
+                        "type": "number",
+                        "description": "Cumulative energy consumed today (kWh)"
+                    }
+                },
+                "required": [
+                    "id",
+                    "meterId",
+                    "timestamp",
+                    "phaseA",
+                    "phaseB",
+                    "phaseC",
+                    "totalActivePower",
+                    "dailyEnergyKwh"
+                ]
+            },
+            "IngestEnergySampleRequest": {
+                "type": "object",
+                "properties": {
+                    "meterId": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "phaseA": {
+                        "type": "object",
+                        "properties": {
+                            "voltage": {
+                                "type": "number",
+                                "description": "RMS Voltage (V)"
+                            },
+                            "current": {
+                                "type": "number",
+                                "description": "RMS Current (A)"
+                            },
+                            "activePower": {
+                                "type": "number",
+                                "description": "Active Power (Watts)"
+                            },
+                            "powerFactor": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "description": "Power Factor (0.0 to 1.0)"
+                            }
+                        },
+                        "required": [
+                            "voltage",
+                            "current",
+                            "activePower",
+                            "powerFactor"
+                        ]
+                    },
+                    "phaseB": {
+                        "type": "object",
+                        "properties": {
+                            "voltage": {
+                                "type": "number",
+                                "description": "RMS Voltage (V)"
+                            },
+                            "current": {
+                                "type": "number",
+                                "description": "RMS Current (A)"
+                            },
+                            "activePower": {
+                                "type": "number",
+                                "description": "Active Power (Watts)"
+                            },
+                            "powerFactor": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "description": "Power Factor (0.0 to 1.0)"
+                            }
+                        },
+                        "required": [
+                            "voltage",
+                            "current",
+                            "activePower",
+                            "powerFactor"
+                        ]
+                    },
+                    "phaseC": {
+                        "type": "object",
+                        "properties": {
+                            "voltage": {
+                                "type": "number",
+                                "description": "RMS Voltage (V)"
+                            },
+                            "current": {
+                                "type": "number",
+                                "description": "RMS Current (A)"
+                            },
+                            "activePower": {
+                                "type": "number",
+                                "description": "Active Power (Watts)"
+                            },
+                            "powerFactor": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "description": "Power Factor (0.0 to 1.0)"
+                            }
+                        },
+                        "required": [
+                            "voltage",
+                            "current",
+                            "activePower",
+                            "powerFactor"
+                        ]
+                    },
+                    "totalActivePower": {
+                        "type": "number"
+                    },
+                    "dailyEnergyKwh": {
+                        "type": "number",
+                        "default": 0
+                    }
+                },
+                "required": [
+                    "meterId",
+                    "phaseA",
+                    "phaseB",
+                    "phaseC"
+                ]
+            },
+            "EnergySummary": {
+                "type": "object",
+                "properties": {
+                    "meterId": {
+                        "type": "string"
+                    },
+                    "currentPowerWatts": {
+                        "type": "number"
+                    },
+                    "dailyEnergyKwh": {
+                        "type": "number"
+                    },
+                    "phaseBalancePercentage": {
+                        "type": "number",
+                        "description": "Phase load balancing metric (0-100%)"
+                    },
+                    "phases": {
+                        "type": "object",
+                        "properties": {
+                            "phaseA": {
+                                "type": "object",
+                                "properties": {
+                                    "voltage": {
+                                        "type": "number",
+                                        "description": "RMS Voltage (V)"
+                                    },
+                                    "current": {
+                                        "type": "number",
+                                        "description": "RMS Current (A)"
+                                    },
+                                    "activePower": {
+                                        "type": "number",
+                                        "description": "Active Power (Watts)"
+                                    },
+                                    "powerFactor": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "description": "Power Factor (0.0 to 1.0)"
+                                    }
+                                },
+                                "required": [
+                                    "voltage",
+                                    "current",
+                                    "activePower",
+                                    "powerFactor"
+                                ]
+                            },
+                            "phaseB": {
+                                "type": "object",
+                                "properties": {
+                                    "voltage": {
+                                        "type": "number",
+                                        "description": "RMS Voltage (V)"
+                                    },
+                                    "current": {
+                                        "type": "number",
+                                        "description": "RMS Current (A)"
+                                    },
+                                    "activePower": {
+                                        "type": "number",
+                                        "description": "Active Power (Watts)"
+                                    },
+                                    "powerFactor": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "description": "Power Factor (0.0 to 1.0)"
+                                    }
+                                },
+                                "required": [
+                                    "voltage",
+                                    "current",
+                                    "activePower",
+                                    "powerFactor"
+                                ]
+                            },
+                            "phaseC": {
+                                "type": "object",
+                                "properties": {
+                                    "voltage": {
+                                        "type": "number",
+                                        "description": "RMS Voltage (V)"
+                                    },
+                                    "current": {
+                                        "type": "number",
+                                        "description": "RMS Current (A)"
+                                    },
+                                    "activePower": {
+                                        "type": "number",
+                                        "description": "Active Power (Watts)"
+                                    },
+                                    "powerFactor": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "description": "Power Factor (0.0 to 1.0)"
+                                    }
+                                },
+                                "required": [
+                                    "voltage",
+                                    "current",
+                                    "activePower",
+                                    "powerFactor"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "phaseA",
+                            "phaseB",
+                            "phaseC"
+                        ]
+                    },
+                    "latestSampleAt": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "meterId",
+                    "currentPowerWatts",
+                    "dailyEnergyKwh",
+                    "phaseBalancePercentage",
+                    "phases",
+                    "latestSampleAt"
+                ]
+            },
+            "SecurityZone": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "armStatus": {
+                        "type": "string",
+                        "enum": [
+                            "DISARMED",
+                            "ARMED_HOME",
+                            "ARMED_AWAY"
+                        ]
+                    },
+                    "homeId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "armStatus",
+                    "homeId",
+                    "createdAt",
+                    "updatedAt"
+                ]
+            },
+            "SetArmStatusRequest": {
+                "type": "object",
+                "properties": {
+                    "armStatus": {
+                        "type": "string",
+                        "enum": [
+                            "DISARMED",
+                            "ARMED_HOME",
+                            "ARMED_AWAY"
+                        ]
+                    },
+                    "homeId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "zoneId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "armStatus"
+                ]
+            },
+            "SecurityIncident": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "severity": {
+                        "type": "string",
+                        "enum": [
+                            "LOW",
+                            "MEDIUM",
+                            "HIGH",
+                            "CRITICAL"
+                        ]
+                    },
+                    "alertType": {
+                        "type": "string"
+                    },
+                    "sourceDevice": {
+                        "type": "string"
+                    },
+                    "details": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "resolvedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "severity",
+                    "alertType",
+                    "sourceDevice",
+                    "details",
+                    "createdAt"
+                ]
+            },
+            "SecuritySystemStatus": {
+                "type": "object",
+                "properties": {
+                    "overallStatus": {
+                        "type": "string",
+                        "enum": [
+                            "DISARMED",
+                            "ARMED_HOME",
+                            "ARMED_AWAY"
+                        ]
+                    },
+                    "zones": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "armStatus": {
+                                    "type": "string",
+                                    "enum": [
+                                        "DISARMED",
+                                        "ARMED_HOME",
+                                        "ARMED_AWAY"
+                                    ]
+                                },
+                                "homeId": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "createdAt": {
+                                    "type": "string"
+                                },
+                                "updatedAt": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "name",
+                                "armStatus",
+                                "homeId",
+                                "createdAt",
+                                "updatedAt"
+                            ]
+                        }
+                    },
+                    "activeIncidentsCount": {
+                        "type": "number"
+                    },
+                    "recentIncidents": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "severity": {
+                                    "type": "string",
+                                    "enum": [
+                                        "LOW",
+                                        "MEDIUM",
+                                        "HIGH",
+                                        "CRITICAL"
+                                    ]
+                                },
+                                "alertType": {
+                                    "type": "string"
+                                },
+                                "sourceDevice": {
+                                    "type": "string"
+                                },
+                                "details": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "resolvedAt": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "createdAt": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "severity",
+                                "alertType",
+                                "sourceDevice",
+                                "details",
+                                "createdAt"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "overallStatus",
+                    "zones",
+                    "activeIncidentsCount",
+                    "recentIncidents"
+                ]
+            }
+        },
+        "parameters": {}
+    },
+    "paths": {
+        "/health/live": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Liveness health check endpoint",
+                "description": "Returns UP if the Koa backend process is alive and responsive.",
+                "responses": {
+                    "200": {
+                        "description": "Process is alive",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "UP"
+                                            ]
+                                        },
+                                        "timestamp": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health/ready": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Readiness health check endpoint",
+                "description": "Checks connectivity to PostgreSQL, Redis, and Kafka.",
+                "responses": {
+                    "200": {
+                        "description": "All backend subsystems are healthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "UP",
+                                                "DOWN",
+                                                "DEGRADED"
+                                            ]
+                                        },
+                                        "timestamp": {
+                                            "type": "string"
+                                        },
+                                        "uptime": {
+                                            "type": "number"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "environment": {
+                                            "type": "string"
+                                        },
+                                        "components": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "status": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "UP",
+                                                            "DOWN",
+                                                            "DEGRADED"
+                                                        ]
+                                                    },
+                                                    "details": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "status"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "timestamp",
+                                        "uptime",
+                                        "version",
+                                        "environment",
+                                        "components"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "One or more essential subsystems are unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "UP",
+                                                "DOWN",
+                                                "DEGRADED"
+                                            ]
+                                        },
+                                        "timestamp": {
+                                            "type": "string"
+                                        },
+                                        "uptime": {
+                                            "type": "number"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "environment": {
+                                            "type": "string"
+                                        },
+                                        "components": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "status": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "UP",
+                                                            "DOWN",
+                                                            "DEGRADED"
+                                                        ]
+                                                    },
+                                                    "details": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "status"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "timestamp",
+                                        "uptime",
+                                        "version",
+                                        "environment",
+                                        "components"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/devices": {
+            "get": {
+                "tags": [
+                    "Devices"
+                ],
+                "summary": "List all smart home devices",
+                "description": "Retrieves all unified smart devices across all IoT vendors with filtering.",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "HUE",
+                                "NEST",
+                                "SWITCHBOT",
+                                "RING",
+                                "BLINK",
+                                "ENERGY_METER",
+                                "CUSTOM"
+                            ]
+                        },
+                        "required": false,
+                        "name": "vendor",
+                        "in": "query"
+                    },
+                    {
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "LIGHT",
+                                "THERMOSTAT",
+                                "CURTAIN",
+                                "BOT",
+                                "CAMERA",
+                                "DOORBELL",
+                                "PLUG",
+                                "SENSOR",
+                                "ENERGY_METER"
+                            ]
+                        },
+                        "required": false,
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": false,
+                        "name": "roomId",
+                        "in": "query"
+                    },
+                    {
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": false,
+                        "name": "homeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of devices retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            },
+                                            "externalId": {
+                                                "type": "string"
+                                            },
+                                            "vendor": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "HUE",
+                                                    "NEST",
+                                                    "SWITCHBOT",
+                                                    "RING",
+                                                    "BLINK",
+                                                    "ENERGY_METER",
+                                                    "CUSTOM"
+                                                ]
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "LIGHT",
+                                                    "THERMOSTAT",
+                                                    "CURTAIN",
+                                                    "BOT",
+                                                    "CAMERA",
+                                                    "DOORBELL",
+                                                    "PLUG",
+                                                    "SENSOR",
+                                                    "ENERGY_METER"
+                                                ]
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "roomId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ],
+                                                "format": "uuid"
+                                            },
+                                            "homeId": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            },
+                                            "state": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            },
+                                            "capabilities": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "isOnline": {
+                                                "type": "boolean"
+                                            },
+                                            "lastSeenAt": {
+                                                "type": "string"
+                                            },
+                                            "createdAt": {
+                                                "type": "string"
+                                            },
+                                            "updatedAt": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "externalId",
+                                            "vendor",
+                                            "type",
+                                            "name",
+                                            "homeId",
+                                            "state",
+                                            "capabilities",
+                                            "isOnline",
+                                            "lastSeenAt",
+                                            "createdAt",
+                                            "updatedAt"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/devices/{id}": {
+            "get": {
+                "tags": [
+                    "Devices"
+                ],
+                "summary": "Get single device details",
+                "description": "Fetches device details, current cached state, and supported capabilities.",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true,
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Device found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "externalId": {
+                                            "type": "string"
+                                        },
+                                        "vendor": {
+                                            "type": "string",
+                                            "enum": [
+                                                "HUE",
+                                                "NEST",
+                                                "SWITCHBOT",
+                                                "RING",
+                                                "BLINK",
+                                                "ENERGY_METER",
+                                                "CUSTOM"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "LIGHT",
+                                                "THERMOSTAT",
+                                                "CURTAIN",
+                                                "BOT",
+                                                "CAMERA",
+                                                "DOORBELL",
+                                                "PLUG",
+                                                "SENSOR",
+                                                "ENERGY_METER"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "roomId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "uuid"
+                                        },
+                                        "homeId": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "state": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        },
+                                        "capabilities": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "isOnline": {
+                                            "type": "boolean"
+                                        },
+                                        "lastSeenAt": {
+                                            "type": "string"
+                                        },
+                                        "createdAt": {
+                                            "type": "string"
+                                        },
+                                        "updatedAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "externalId",
+                                        "vendor",
+                                        "type",
+                                        "name",
+                                        "homeId",
+                                        "state",
+                                        "capabilities",
+                                        "isOnline",
+                                        "lastSeenAt",
+                                        "createdAt",
+                                        "updatedAt"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found"
+                    }
+                }
+            }
+        },
+        "/devices/{id}/command": {
+            "post": {
+                "tags": [
+                    "Devices"
+                ],
+                "summary": "Execute IoT command on device",
+                "description": "Enqueues command into BullMQ rate-limited worker and updates device state.",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true,
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "action": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "description": "Command action name, e.g., set_state, turn_on, set_temperature, close"
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "additionalProperties": {},
+                                        "default": {},
+                                        "description": "Parameters for the action"
+                                    }
+                                },
+                                "required": [
+                                    "action"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Command executed or queued successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "jobId": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "QUEUED",
+                                                "EXECUTED"
+                                            ]
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "updatedState": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "jobId",
+                                        "status",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found"
+                    },
+                    "422": {
+                        "description": "Invalid command payload"
+                    }
+                }
+            }
+        },
+        "/scenes": {
+            "get": {
+                "tags": [
+                    "Scenes"
+                ],
+                "summary": "List all scenes",
+                "description": "Returns all smart home scenes configured for the home.",
+                "responses": {
+                    "200": {
+                        "description": "Scenes listed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "icon": {
+                                                "type": "string"
+                                            },
+                                            "homeId": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            },
+                                            "actions": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "deviceId": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "action": {
+                                                            "type": "string"
+                                                        },
+                                                        "payload": {
+                                                            "type": "object",
+                                                            "additionalProperties": {}
+                                                        },
+                                                        "order": {
+                                                            "type": "number"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "deviceId",
+                                                        "action",
+                                                        "payload",
+                                                        "order"
+                                                    ]
+                                                }
+                                            },
+                                            "createdAt": {
+                                                "type": "string"
+                                            },
+                                            "updatedAt": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "name",
+                                            "icon",
+                                            "homeId",
+                                            "actions",
+                                            "createdAt",
+                                            "updatedAt"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Scenes"
+                ],
+                "summary": "Create a new multi-device scene",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 50
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "default": "scene_default"
+                                    },
+                                    "homeId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "actions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "deviceId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "action": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "payload": {
+                                                    "type": "object",
+                                                    "additionalProperties": {},
+                                                    "default": {}
+                                                },
+                                                "order": {
+                                                    "type": "number",
+                                                    "default": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "deviceId",
+                                                "action"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "homeId",
+                                    "actions"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Scene created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "icon": {
+                                            "type": "string"
+                                        },
+                                        "homeId": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "actions": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "deviceId": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "action": {
+                                                        "type": "string"
+                                                    },
+                                                    "payload": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    },
+                                                    "order": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "deviceId",
+                                                    "action",
+                                                    "payload",
+                                                    "order"
+                                                ]
+                                            }
+                                        },
+                                        "createdAt": {
+                                            "type": "string"
+                                        },
+                                        "updatedAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "icon",
+                                        "homeId",
+                                        "actions",
+                                        "createdAt",
+                                        "updatedAt"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/scenes/{id}/trigger": {
+            "post": {
+                "tags": [
+                    "Scenes"
+                ],
+                "summary": "Trigger a scene execution",
+                "description": "Executes all actions registered within the scene in sequence or parallel.",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true,
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Scene triggered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "sceneId": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "executedActionsCount": {
+                                            "type": "number"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "sceneId",
+                                        "executedActionsCount",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Scene not found"
+                    }
+                }
+            }
+        },
+        "/automations": {
+            "get": {
+                "tags": [
+                    "Automations"
+                ],
+                "summary": "List all automation rules",
+                "description": "Retrieves all active Trigger-Condition-Action automation rules.",
+                "responses": {
+                    "200": {
+                        "description": "Automations retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "isEnabled": {
+                                                "type": "boolean"
+                                            },
+                                            "triggerType": {
+                                                "type": "string"
+                                            },
+                                            "triggerCondition": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            },
+                                            "actions": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "deviceId": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "action": {
+                                                            "type": "string"
+                                                        },
+                                                        "payload": {
+                                                            "type": "object",
+                                                            "additionalProperties": {}
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "deviceId",
+                                                        "action",
+                                                        "payload"
+                                                    ]
+                                                }
+                                            },
+                                            "homeId": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            },
+                                            "createdAt": {
+                                                "type": "string"
+                                            },
+                                            "updatedAt": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "name",
+                                            "isEnabled",
+                                            "triggerType",
+                                            "triggerCondition",
+                                            "actions",
+                                            "homeId",
+                                            "createdAt",
+                                            "updatedAt"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Automations"
+                ],
+                "summary": "Create a new automation rule",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 100
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "isEnabled": {
+                                        "type": "boolean",
+                                        "default": true
+                                    },
+                                    "triggerType": {
+                                        "type": "string",
+                                        "enum": [
+                                            "TIME_CRON",
+                                            "DEVICE_EVENT",
+                                            "ENERGY_THRESHOLD",
+                                            "SECURITY_ALARM"
+                                        ]
+                                    },
+                                    "triggerCondition": {
+                                        "type": "object",
+                                        "additionalProperties": {}
+                                    },
+                                    "actions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "deviceId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "action": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "payload": {
+                                                    "type": "object",
+                                                    "additionalProperties": {},
+                                                    "default": {}
+                                                }
+                                            },
+                                            "required": [
+                                                "deviceId",
+                                                "action"
+                                            ]
+                                        }
+                                    },
+                                    "homeId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "triggerType",
+                                    "triggerCondition",
+                                    "actions",
+                                    "homeId"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Automation rule created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "isEnabled": {
+                                            "type": "boolean"
+                                        },
+                                        "triggerType": {
+                                            "type": "string"
+                                        },
+                                        "triggerCondition": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        },
+                                        "actions": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "deviceId": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "action": {
+                                                        "type": "string"
+                                                    },
+                                                    "payload": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    }
+                                                },
+                                                "required": [
+                                                    "deviceId",
+                                                    "action",
+                                                    "payload"
+                                                ]
+                                            }
+                                        },
+                                        "homeId": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "createdAt": {
+                                            "type": "string"
+                                        },
+                                        "updatedAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "isEnabled",
+                                        "triggerType",
+                                        "triggerCondition",
+                                        "actions",
+                                        "homeId",
+                                        "createdAt",
+                                        "updatedAt"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/automations/{id}/execute": {
+            "post": {
+                "tags": [
+                    "Automations"
+                ],
+                "summary": "Manually execute an automation rule",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true,
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Automation executed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "automationId": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "executedActionsCount": {
+                                            "type": "number"
+                                        },
+                                        "durationMs": {
+                                            "type": "number"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "SUCCESS",
+                                                "FAILED",
+                                                "PARTIAL"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "automationId",
+                                        "executedActionsCount",
+                                        "durationMs",
+                                        "status"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Automation not found"
+                    }
+                }
+            }
+        },
+        "/energy/summary": {
+            "get": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Get real-time three-phase energy summary",
+                "description": "Returns real-time power metrics, phase balance, and daily kWh consumption.",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": false,
+                        "name": "meterId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Energy summary retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "meterId": {
+                                            "type": "string"
+                                        },
+                                        "currentPowerWatts": {
+                                            "type": "number"
+                                        },
+                                        "dailyEnergyKwh": {
+                                            "type": "number"
+                                        },
+                                        "phaseBalancePercentage": {
+                                            "type": "number",
+                                            "description": "Phase load balancing metric (0-100%)"
+                                        },
+                                        "phases": {
+                                            "type": "object",
+                                            "properties": {
+                                                "phaseA": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "voltage": {
+                                                            "type": "number",
+                                                            "description": "RMS Voltage (V)"
+                                                        },
+                                                        "current": {
+                                                            "type": "number",
+                                                            "description": "RMS Current (A)"
+                                                        },
+                                                        "activePower": {
+                                                            "type": "number",
+                                                            "description": "Active Power (Watts)"
+                                                        },
+                                                        "powerFactor": {
+                                                            "type": "number",
+                                                            "minimum": 0,
+                                                            "maximum": 1,
+                                                            "description": "Power Factor (0.0 to 1.0)"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "voltage",
+                                                        "current",
+                                                        "activePower",
+                                                        "powerFactor"
+                                                    ]
+                                                },
+                                                "phaseB": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "voltage": {
+                                                            "type": "number",
+                                                            "description": "RMS Voltage (V)"
+                                                        },
+                                                        "current": {
+                                                            "type": "number",
+                                                            "description": "RMS Current (A)"
+                                                        },
+                                                        "activePower": {
+                                                            "type": "number",
+                                                            "description": "Active Power (Watts)"
+                                                        },
+                                                        "powerFactor": {
+                                                            "type": "number",
+                                                            "minimum": 0,
+                                                            "maximum": 1,
+                                                            "description": "Power Factor (0.0 to 1.0)"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "voltage",
+                                                        "current",
+                                                        "activePower",
+                                                        "powerFactor"
+                                                    ]
+                                                },
+                                                "phaseC": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "voltage": {
+                                                            "type": "number",
+                                                            "description": "RMS Voltage (V)"
+                                                        },
+                                                        "current": {
+                                                            "type": "number",
+                                                            "description": "RMS Current (A)"
+                                                        },
+                                                        "activePower": {
+                                                            "type": "number",
+                                                            "description": "Active Power (Watts)"
+                                                        },
+                                                        "powerFactor": {
+                                                            "type": "number",
+                                                            "minimum": 0,
+                                                            "maximum": 1,
+                                                            "description": "Power Factor (0.0 to 1.0)"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "voltage",
+                                                        "current",
+                                                        "activePower",
+                                                        "powerFactor"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "phaseA",
+                                                "phaseB",
+                                                "phaseC"
+                                            ]
+                                        },
+                                        "latestSampleAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "meterId",
+                                        "currentPowerWatts",
+                                        "dailyEnergyKwh",
+                                        "phaseBalancePercentage",
+                                        "phases",
+                                        "latestSampleAt"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/energy/telemetry": {
+            "post": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Ingest three-phase power telemetry sample",
+                "description": "Endpoint called by Shelly 3EM / IoT Energy Gateway to record real-time telemetry.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "meterId": {
+                                        "type": "string",
+                                        "minLength": 1
+                                    },
+                                    "phaseA": {
+                                        "type": "object",
+                                        "properties": {
+                                            "voltage": {
+                                                "type": "number",
+                                                "description": "RMS Voltage (V)"
+                                            },
+                                            "current": {
+                                                "type": "number",
+                                                "description": "RMS Current (A)"
+                                            },
+                                            "activePower": {
+                                                "type": "number",
+                                                "description": "Active Power (Watts)"
+                                            },
+                                            "powerFactor": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 1,
+                                                "description": "Power Factor (0.0 to 1.0)"
+                                            }
+                                        },
+                                        "required": [
+                                            "voltage",
+                                            "current",
+                                            "activePower",
+                                            "powerFactor"
+                                        ]
+                                    },
+                                    "phaseB": {
+                                        "type": "object",
+                                        "properties": {
+                                            "voltage": {
+                                                "type": "number",
+                                                "description": "RMS Voltage (V)"
+                                            },
+                                            "current": {
+                                                "type": "number",
+                                                "description": "RMS Current (A)"
+                                            },
+                                            "activePower": {
+                                                "type": "number",
+                                                "description": "Active Power (Watts)"
+                                            },
+                                            "powerFactor": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 1,
+                                                "description": "Power Factor (0.0 to 1.0)"
+                                            }
+                                        },
+                                        "required": [
+                                            "voltage",
+                                            "current",
+                                            "activePower",
+                                            "powerFactor"
+                                        ]
+                                    },
+                                    "phaseC": {
+                                        "type": "object",
+                                        "properties": {
+                                            "voltage": {
+                                                "type": "number",
+                                                "description": "RMS Voltage (V)"
+                                            },
+                                            "current": {
+                                                "type": "number",
+                                                "description": "RMS Current (A)"
+                                            },
+                                            "activePower": {
+                                                "type": "number",
+                                                "description": "Active Power (Watts)"
+                                            },
+                                            "powerFactor": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 1,
+                                                "description": "Power Factor (0.0 to 1.0)"
+                                            }
+                                        },
+                                        "required": [
+                                            "voltage",
+                                            "current",
+                                            "activePower",
+                                            "powerFactor"
+                                        ]
+                                    },
+                                    "totalActivePower": {
+                                        "type": "number"
+                                    },
+                                    "dailyEnergyKwh": {
+                                        "type": "number",
+                                        "default": 0
+                                    }
+                                },
+                                "required": [
+                                    "meterId",
+                                    "phaseA",
+                                    "phaseB",
+                                    "phaseC"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Telemetry sample ingested",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "meterId": {
+                                            "type": "string"
+                                        },
+                                        "timestamp": {
+                                            "type": "string"
+                                        },
+                                        "phaseA": {
+                                            "type": "object",
+                                            "properties": {
+                                                "voltage": {
+                                                    "type": "number",
+                                                    "description": "RMS Voltage (V)"
+                                                },
+                                                "current": {
+                                                    "type": "number",
+                                                    "description": "RMS Current (A)"
+                                                },
+                                                "activePower": {
+                                                    "type": "number",
+                                                    "description": "Active Power (Watts)"
+                                                },
+                                                "powerFactor": {
+                                                    "type": "number",
+                                                    "minimum": 0,
+                                                    "maximum": 1,
+                                                    "description": "Power Factor (0.0 to 1.0)"
+                                                }
+                                            },
+                                            "required": [
+                                                "voltage",
+                                                "current",
+                                                "activePower",
+                                                "powerFactor"
+                                            ]
+                                        },
+                                        "phaseB": {
+                                            "type": "object",
+                                            "properties": {
+                                                "voltage": {
+                                                    "type": "number",
+                                                    "description": "RMS Voltage (V)"
+                                                },
+                                                "current": {
+                                                    "type": "number",
+                                                    "description": "RMS Current (A)"
+                                                },
+                                                "activePower": {
+                                                    "type": "number",
+                                                    "description": "Active Power (Watts)"
+                                                },
+                                                "powerFactor": {
+                                                    "type": "number",
+                                                    "minimum": 0,
+                                                    "maximum": 1,
+                                                    "description": "Power Factor (0.0 to 1.0)"
+                                                }
+                                            },
+                                            "required": [
+                                                "voltage",
+                                                "current",
+                                                "activePower",
+                                                "powerFactor"
+                                            ]
+                                        },
+                                        "phaseC": {
+                                            "type": "object",
+                                            "properties": {
+                                                "voltage": {
+                                                    "type": "number",
+                                                    "description": "RMS Voltage (V)"
+                                                },
+                                                "current": {
+                                                    "type": "number",
+                                                    "description": "RMS Current (A)"
+                                                },
+                                                "activePower": {
+                                                    "type": "number",
+                                                    "description": "Active Power (Watts)"
+                                                },
+                                                "powerFactor": {
+                                                    "type": "number",
+                                                    "minimum": 0,
+                                                    "maximum": 1,
+                                                    "description": "Power Factor (0.0 to 1.0)"
+                                                }
+                                            },
+                                            "required": [
+                                                "voltage",
+                                                "current",
+                                                "activePower",
+                                                "powerFactor"
+                                            ]
+                                        },
+                                        "totalActivePower": {
+                                            "type": "number",
+                                            "description": "Sum of active power across all 3 phases (Watts)"
+                                        },
+                                        "dailyEnergyKwh": {
+                                            "type": "number",
+                                            "description": "Cumulative energy consumed today (kWh)"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "meterId",
+                                        "timestamp",
+                                        "phaseA",
+                                        "phaseB",
+                                        "phaseC",
+                                        "totalActivePower",
+                                        "dailyEnergyKwh"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/security/status": {
+            "get": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Get overall home security system status",
+                "responses": {
+                    "200": {
+                        "description": "Security status retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "overallStatus": {
+                                            "type": "string",
+                                            "enum": [
+                                                "DISARMED",
+                                                "ARMED_HOME",
+                                                "ARMED_AWAY"
+                                            ]
+                                        },
+                                        "zones": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "armStatus": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "DISARMED",
+                                                            "ARMED_HOME",
+                                                            "ARMED_AWAY"
+                                                        ]
+                                                    },
+                                                    "homeId": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string"
+                                                    },
+                                                    "updatedAt": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "name",
+                                                    "armStatus",
+                                                    "homeId",
+                                                    "createdAt",
+                                                    "updatedAt"
+                                                ]
+                                            }
+                                        },
+                                        "activeIncidentsCount": {
+                                            "type": "number"
+                                        },
+                                        "recentIncidents": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "severity": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "LOW",
+                                                            "MEDIUM",
+                                                            "HIGH",
+                                                            "CRITICAL"
+                                                        ]
+                                                    },
+                                                    "alertType": {
+                                                        "type": "string"
+                                                    },
+                                                    "sourceDevice": {
+                                                        "type": "string"
+                                                    },
+                                                    "details": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    },
+                                                    "resolvedAt": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "severity",
+                                                    "alertType",
+                                                    "sourceDevice",
+                                                    "details",
+                                                    "createdAt"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "overallStatus",
+                                        "zones",
+                                        "activeIncidentsCount",
+                                        "recentIncidents"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/security/arm": {
+            "post": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Set security system arm status (DISARMED, ARMED_HOME, ARMED_AWAY)",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "armStatus": {
+                                        "type": "string",
+                                        "enum": [
+                                            "DISARMED",
+                                            "ARMED_HOME",
+                                            "ARMED_AWAY"
+                                        ]
+                                    },
+                                    "homeId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "zoneId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "required": [
+                                    "armStatus"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Arm status updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "overallStatus": {
+                                            "type": "string",
+                                            "enum": [
+                                                "DISARMED",
+                                                "ARMED_HOME",
+                                                "ARMED_AWAY"
+                                            ]
+                                        },
+                                        "zones": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "armStatus": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "DISARMED",
+                                                            "ARMED_HOME",
+                                                            "ARMED_AWAY"
+                                                        ]
+                                                    },
+                                                    "homeId": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string"
+                                                    },
+                                                    "updatedAt": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "name",
+                                                    "armStatus",
+                                                    "homeId",
+                                                    "createdAt",
+                                                    "updatedAt"
+                                                ]
+                                            }
+                                        },
+                                        "activeIncidentsCount": {
+                                            "type": "number"
+                                        },
+                                        "recentIncidents": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "severity": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "LOW",
+                                                            "MEDIUM",
+                                                            "HIGH",
+                                                            "CRITICAL"
+                                                        ]
+                                                    },
+                                                    "alertType": {
+                                                        "type": "string"
+                                                    },
+                                                    "sourceDevice": {
+                                                        "type": "string"
+                                                    },
+                                                    "details": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    },
+                                                    "resolvedAt": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "severity",
+                                                    "alertType",
+                                                    "sourceDevice",
+                                                    "details",
+                                                    "createdAt"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "overallStatus",
+                                        "zones",
+                                        "activeIncidentsCount",
+                                        "recentIncidents"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/security/incident": {
+            "post": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Report a security alarm or sensor breach",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "severity": {
+                                        "type": "string",
+                                        "enum": [
+                                            "LOW",
+                                            "MEDIUM",
+                                            "HIGH",
+                                            "CRITICAL"
+                                        ],
+                                        "default": "MEDIUM"
+                                    },
+                                    "alertType": {
+                                        "type": "string",
+                                        "enum": [
+                                            "MOTION_DETECTED",
+                                            "DOOR_OPENED",
+                                            "GLASS_BREAK",
+                                            "TAMPER",
+                                            "OFFLINE_BREACH"
+                                        ]
+                                    },
+                                    "sourceDevice": {
+                                        "type": "string",
+                                        "minLength": 1
+                                    },
+                                    "details": {
+                                        "type": "object",
+                                        "additionalProperties": {},
+                                        "default": {}
+                                    }
+                                },
+                                "required": [
+                                    "alertType",
+                                    "sourceDevice"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Security incident logged and alarm event published",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "severity": {
+                                            "type": "string",
+                                            "enum": [
+                                                "LOW",
+                                                "MEDIUM",
+                                                "HIGH",
+                                                "CRITICAL"
+                                            ]
+                                        },
+                                        "alertType": {
+                                            "type": "string"
+                                        },
+                                        "sourceDevice": {
+                                            "type": "string"
+                                        },
+                                        "details": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        },
+                                        "resolvedAt": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "createdAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "severity",
+                                        "alertType",
+                                        "sourceDevice",
+                                        "details",
+                                        "createdAt"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "webhooks": {}
+}

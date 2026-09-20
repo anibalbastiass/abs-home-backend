@@ -1,0 +1,47 @@
+name: Deploy to Staging (DigitalOcean)
+
+on:
+  push:
+    branches: [ staging ]
+  workflow_dispatch:
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies & Run Tests
+        run: |
+          npm ci
+          npm run test
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry (DOCR)
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Build and Push Staging Image
+        run: |
+          docker build -t registry.digitalocean.com/abs-registry/backend:staging .
+          docker push registry.digitalocean.com/abs-registry/backend:staging
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: Terraform Apply (Staging)
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -var-file="environments/staging.tfvars" -var="do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" -auto-approve
