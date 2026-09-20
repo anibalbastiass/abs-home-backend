@@ -18,6 +18,19 @@ resource "digitalocean_app" "backend_gateway" {
         name   = "${var.app_name}-${var.environment}"
         region = var.region
 
+        ingress {
+            rule {
+                component {
+                    name = "api"
+                }
+                match {
+                    path {
+                        prefix = "/"
+                    }
+                }
+            }
+        }
+
         service {
             name               = "api"
             environment_slug   = "node-js"
@@ -29,10 +42,6 @@ resource "digitalocean_app" "backend_gateway" {
                 registry_type = "DOCR"
                 repository    = var.docr_repository
                 tag           = var.image_tag
-            }
-
-            routes {
-                path = "/"
             }
 
             health_check {
