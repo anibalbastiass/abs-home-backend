@@ -14,10 +14,10 @@ ABS Smart Home Backend uses **GitHub Actions** for automated linting, typechecki
 
 ```mermaid
 flowchart TD
-    A[Git Push / PR] --> B[ci.yml: Lint, Typecheck, Vitest Coverage >=80%]
-    B --> C{Branch / Event}
-    C -->|Push to staging| D[deploy-staging.yml: DigitalOcean Staging App]
-    C -->|Release Tag vX.Y.Z| E[deploy-production.yml: Multi-Arch Docker Build & Deploy Prod]
+    A["Git Push / PR"] --> B["ci.yml: Lint, Typecheck, Vitest Coverage >=80%"]
+    B --> C{"Branch / Event"}
+    C -->|"Push to staging"| D["deploy-staging.yml: DigitalOcean Staging App"]
+    C -->|"Release Tag vX.Y.Z"| E["deploy-production.yml: Multi-Arch Docker Build & Deploy Prod"]
 ```
 
 ---

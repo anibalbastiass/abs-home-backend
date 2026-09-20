@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ABS Smart Home API — Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+    <link rel="icon" type="image/png" href="../img/favicon.ico" />
+    <style>
+        html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            margin: 0;
+            background: #0f172a;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .topbar-banner {
+            background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 1px solid #334155;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .topbar-banner h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .topbar-banner a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 6px 12px;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .topbar-banner a:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+        .swagger-ui {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 20px 0;
+        }
+        .swagger-ui .topbar {
+            display: none;
+        }
+        .swagger-ui .info .title {
+            color: #f8fafc;
+        }
+        .swagger-ui .info p, .swagger-ui .info li, .swagger-ui .info td {
+            color: #94a3b8;
+        }
+        .swagger-ui .scheme-container {
+            background: #1e293b;
+            box-shadow: none;
+            border-radius: 8px;
+            margin: 0 0 20px 0;
+            padding: 20px;
+        }
+        .swagger-ui .opblock {
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .swagger-ui .opblock .opblock-summary-operation-id,
+        .swagger-ui .opblock .opblock-summary-path,
+        .swagger-ui .opblock .opblock-summary-path__deprecated {
+            color: #f8fafc;
+        }
+        .swagger-ui .opblock-description-wrapper p,
+        .swagger-ui .opblock-external-docs-wrapper p,
+        .swagger-ui .opblock-title_normal p {
+            color: #94a3b8;
+        }
+        .swagger-ui table thead tr td,
+        .swagger-ui table thead tr th {
+            color: #f8fafc;
+            border-bottom: 1px solid #334155;
+        }
+        .swagger-ui .tab li button.tablinks {
+            color: #94a3b8;
+        }
+        .swagger-ui select {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar-banner">
+        <h1>🏠 ABS Smart Home — Interactive API Explorer</h1>
+        <a href="../">← Back to Documentation</a>
+    </div>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            // Determine relative openapi spec path based on hosting environment
+            const specUrl = window.location.pathname.includes('/abs-home-backend/')
+                ? '/abs-home-backend/openapi.json'
+                : '../openapi.json';
+
+            const ui = SwaggerUIBundle({
+                url: specUrl,
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "BaseLayout"
+            });
+            window.ui = ui;
+        };
+    </script>
+</body>
+</html>

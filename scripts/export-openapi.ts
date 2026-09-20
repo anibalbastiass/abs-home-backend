@@ -22,6 +22,12 @@ async function exportSpec() {
     const outputPath = path.join(outputDir, 'openapi.json');
     fs.writeFileSync(outputPath, JSON.stringify(spec, null, 4), 'utf-8');
 
+    const docsSiteStaticDir = path.resolve(__dirname, '../docs-site/static');
+    if (fs.existsSync(docsSiteStaticDir)) {
+        const staticOutputPath = path.join(docsSiteStaticDir, 'openapi.json');
+        fs.writeFileSync(staticOutputPath, JSON.stringify(spec, null, 4), 'utf-8');
+    }
+
     console.log(`✅ OpenAPI 3.1 Spec successfully exported to: ${outputPath}`);
 }
 

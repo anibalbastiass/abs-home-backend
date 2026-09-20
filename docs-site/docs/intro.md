@@ -27,7 +27,7 @@ The ABS Smart Home Backend is a high-performance **KoaJS + TypeScript** IoT gate
 
 ```mermaid
 flowchart TD
-    Client["KMP Mobile Client"] -->|REST API (Bearer Token)| KoaApp["KoaJS HTTP Gateway"]
+    Client["KMP Mobile Client"] -->|"REST API (Bearer Token)"| KoaApp["KoaJS HTTP Gateway"]
     KoaApp --> Router["Koa Router + Helmet + CORS"]
     Router --> ErrorMW["RFC 7807 Error Middleware"]
     ErrorMW --> Controllers["Domain Controllers"]

@@ -7,8 +7,9 @@ const config: Config = {
     tagline: 'High-Performance IoT Gateway, Control Plane & Automation Engine',
     favicon: 'img/favicon.ico',
 
-    url: 'https://backend-docs.abshome.dev',
-    baseUrl: '/',
+    url: 'https://anibalbastiass.github.io',
+    baseUrl: '/abs-home-backend/',
+    trailingSlash: false,
 
     organizationName: 'anibalbastiass',
     projectName: 'abs-home-backend',
@@ -51,6 +52,11 @@ const config: Config = {
                     sidebarId: 'docsSidebar',
                     position: 'left',
                     label: 'Documentation',
+                },
+                {
+                    href: 'pathname:///abs-home-backend/swagger/',
+                    label: 'Swagger UI',
+                    position: 'left',
                 },
                 {
                     href: 'https://github.com/anibalbastiass/abs-home-backend',

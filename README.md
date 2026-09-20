@@ -1,8 +1,9 @@
 # ABS Smart Home — Backend Gateway & Control Plane
 
 [![CI / Quality Gate](https://github.com/anibalbastiass/abs-home-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/anibalbastiass/abs-home-backend/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/anibalbastiass/abs-home-backend/releases)
-[![Coverage](https://img.shields.io/badge/coverage-94.64%25-brightgreen.svg)](https://github.com/anibalbastiass/abs-home-backend)
+[![Docs & Swagger](https://github.com/anibalbastiass/abs-home-backend/actions/workflows/deploy-docs.yml/badge.svg)](https://anibalbastiass.github.io/abs-home-backend/)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/anibalbastiass/abs-home-backend/releases)
+[![Coverage](https://img.shields.io/badge/coverage-94.46%25-brightgreen.svg)](https://github.com/anibalbastiass/abs-home-backend)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-22%20LTS-green?logo=node.js)](https://nodejs.org/)
 [![KoaJS](https://img.shields.io/badge/KoaJS-2.15-333333?logo=koa)](https://koajs.com/)
@@ -13,6 +14,17 @@
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
 
 High-performance, modular **KoaJS + TypeScript** IoT gateway and domain control plane for the **ABS Smart Home** ecosystem. Unifies third-party vendor clouds (**Philips Hue**, **Google Nest**, **SwitchBot**, **Ring**, **Amazon Blink**), three-phase power monitoring, and custom automation rules into a single zero-trust control plane.
+
+---
+
+## 🌐 Live Documentation & API Explorers
+
+| Resource | Description | Live Link |
+| :--- | :--- | :--- |
+| 📚 **Docusaurus Documentation** | Complete architectural guides, domain specifications, and runbooks | [anibalbastiass.github.io/abs-home-backend](https://anibalbastiass.github.io/abs-home-backend/) |
+| 📖 **Interactive Swagger UI** | Live browser-based OpenAPI explorer with schema testing | [anibalbastiass.github.io/abs-home-backend/swagger/](https://anibalbastiass.github.io/abs-home-backend/swagger/) |
+| 📋 **OpenAPI 3.1 Specification** | Raw OpenAPI JSON spec for Kotlin Multiplatform mobile codegen | [anibalbastiass.github.io/abs-home-backend/openapi.json](https://anibalbastiass.github.io/abs-home-backend/openapi.json) |
+| ⚡ **Local Swagger UI** | Local server interactive documentation | `http://localhost:3000/docs` |
 
 ---
 
@@ -66,14 +78,14 @@ flowchart TD
         RedisCache["DigitalOcean Managed Redis 7"]
     end
 
-    KMP -->|REST API (Bearer Token)| Router
+    KMP -->|"REST API (Bearer Token)"| Router
     Router --> ErrorMW --> DomainServices
     DIContainer --> DomainServices
     DomainServices --> Prisma --> Postgres
     DomainServices --> RedisCache
-    DomainServices -->|Enqueue Throttled Commands| BullMQ
+    DomainServices -->|"Enqueue Throttled Commands"| BullMQ
     BullMQ --> HueLimiter & NestLimiter & SwitchBotLimiter & RingLimiter & BlinkLimiter
-    DomainServices -->|Publish Domain Events| Kafka
+    DomainServices -->|"Publish Domain Events"| Kafka
     Kafka --> DeviceTopic & AutoTopic & EnergyTopic & SecurityTopic
 ```
 

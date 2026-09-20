@@ -44,3 +44,8 @@ Thumbs.db
 
 # Docker
 .dockerignore
+
+# Docusaurus
+docs-site/build/
+docs-site/.docusaurus/
+
