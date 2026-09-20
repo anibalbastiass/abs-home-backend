@@ -34,6 +34,12 @@ variable "app_instance_count" {
     default     = 1
 }
 
+variable "git_branch" {
+    description = "Git branch to build and deploy"
+    type        = string
+    default     = "main"
+}
+
 variable "docr_repository" {
     description = "DigitalOcean Container Registry repository"
     type        = string

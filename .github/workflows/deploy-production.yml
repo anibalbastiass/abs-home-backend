@@ -27,18 +27,6 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Log in to DigitalOcean Container Registry (DOCR)
-        run: doctl registry login --expiry-seconds 1200
-
-      - name: Build and Push Production Images
-        run: |
-          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-home-registry' }}"
-          IMAGE_TAG="${GITHUB_SHA::7}"
-          docker build -t registry.digitalocean.com/${REGISTRY}/backend:latest -t registry.digitalocean.com/${REGISTRY}/backend:${IMAGE_TAG} .
-          docker push registry.digitalocean.com/${REGISTRY}/backend:latest
-          docker push registry.digitalocean.com/${REGISTRY}/backend:${IMAGE_TAG}
-          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -48,8 +36,7 @@ jobs:
         run: |
           cd terraform
           terraform init
-          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-home-registry' }}"
-          TF_VARS="-var-file=environments/prod.tfvars -var=do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -var=docr_repository=backend -var=image_tag=${IMAGE_TAG}"
+          TF_VARS="-var-file=environments/prod.tfvars -var=do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -var=git_branch=main"
 
           # 1. Import PostgreSQL cluster if already provisioned
           PG_ID=$(doctl databases list --format ID,Name --no-header | grep "abs-postgres-production" | awk '{print $1}' || true)

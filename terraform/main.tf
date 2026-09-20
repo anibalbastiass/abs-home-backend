@@ -38,15 +38,14 @@ resource "digitalocean_app" "backend_gateway" {
             instance_size_slug = var.app_instance_size
             http_port          = 3000
 
-            image {
-                registry_type = "DOCR"
-                repository    = var.docr_repository
-                tag           = var.image_tag
+            git {
+                repo_clone_url = "https://github.com/anibalbastiass/abs-home-backend.git"
+                branch         = var.git_branch
             }
 
             health_check {
                 http_path             = "/health/live"
-                initial_delay_seconds = 10
+                initial_delay_seconds = 15
                 period_seconds        = 10
                 timeout_seconds       = 5
                 success_threshold     = 1
