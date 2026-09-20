@@ -39,10 +39,12 @@ export class QueueManager {
 
     public getRedisConnection(): Redis {
         if (!this.redisConnection) {
+            const isTls = env.REDIS_URL.startsWith('rediss://');
             this.redisConnection = new Redis(env.REDIS_URL, {
                 maxRetriesPerRequest: null,
                 enableReadyCheck: false,
                 lazyConnect: true,
+                tls: isTls ? { rejectUnauthorized: false } : undefined,
             });
 
             this.redisConnection.on('error', (err) => {

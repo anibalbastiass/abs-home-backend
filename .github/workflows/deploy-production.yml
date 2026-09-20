@@ -57,8 +57,8 @@ jobs:
           if [ -n "$PG_ID" ]; then
             echo "Importing existing PostgreSQL cluster $PG_ID..."
             terraform import $TF_VARS digitalocean_database_cluster.postgres "$PG_ID" || true
-            terraform import $TF_VARS digitalocean_database_db.abs_database "${PG_ID}/abs_smarthome" || true
-            terraform import $TF_VARS digitalocean_database_user.abs_user "${PG_ID}/abs_admin" || true
+            terraform import $TF_VARS digitalocean_database_db.abs_database "${PG_ID},abs_smarthome" || true
+            terraform import $TF_VARS digitalocean_database_user.abs_user "${PG_ID},abs_admin" || true
           fi
 
           # 2. Import Redis/Valkey cluster if already provisioned

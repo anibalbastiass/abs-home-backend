@@ -30,8 +30,8 @@ async function bootstrap(): Promise<void> {
 
     // 4. Create and start Koa HTTP Server with DI Container
     const app = createApp(container);
-    const server = app.listen(container.env.PORT, () => {
-        logger.info(`✨ ABS Smart Home Gateway running on http://localhost:${container.env.PORT}`);
+    const server = app.listen(container.env.PORT, '0.0.0.0', () => {
+        logger.info(`✨ ABS Smart Home Gateway running on http://0.0.0.0:${container.env.PORT}`);
         logger.info(`📖 OpenAPI 3.1 Spec available at http://localhost:${container.env.PORT}${container.env.API_PREFIX}/openapi.json`);
     });
 

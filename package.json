@@ -6,7 +6,7 @@
     "type": "commonjs",
     "scripts": {
         "dev": "tsx watch src/server.ts",
-        "build": "tsc",
+        "build": "tsc && tsc-alias",
         "start": "node dist/server.js",
         "lint": "eslint \"src/**/*.ts\" \"scripts/**/*.ts\"",
         "lint:fix": "eslint \"src/**/*.ts\" \"scripts/**/*.ts\" --fix",
@@ -58,9 +58,9 @@
     "devDependencies": {
         "@eslint/js": "^9.20.0",
         "@types/koa": "^2.15.0",
-        "@types/koa-bodyparser": "^4.3.12",
         "@types/koa__cors": "^5.0.0",
         "@types/koa__router": "^12.0.4",
+        "@types/koa-bodyparser": "^4.3.12",
         "@types/node": "^22.13.4",
         "@types/supertest": "^6.0.2",
         "@typescript-eslint/eslint-plugin": "^8.24.1",
@@ -69,6 +69,7 @@
         "eslint": "^9.20.1",
         "prisma": "^5.22.0",
         "supertest": "^7.0.0",
+        "tsc-alias": "^1.9.5",
         "tsx": "^4.19.3",
         "typescript": "^5.7.3",
         "vitest": "^3.0.6"
