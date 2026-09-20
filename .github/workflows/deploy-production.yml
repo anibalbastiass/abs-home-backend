@@ -28,14 +28,17 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DigitalOcean Container Registry (DOCR)
-        run: doctl registry login --expiry-seconds 1200
+        run: |
+          doctl registry login --read-write --expiry-seconds 1200
+          echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login registry.digitalocean.com -u "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" --password-stdin
 
       - name: Build and Push Production Images
         run: |
+          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-home-registry' }}"
           TAG=${GITHUB_REF_NAME:-latest}
-          docker build -t registry.digitalocean.com/abs-registry/backend:${TAG} -t registry.digitalocean.com/abs-registry/backend:latest .
-          docker push registry.digitalocean.com/abs-registry/backend:${TAG}
-          docker push registry.digitalocean.com/abs-registry/backend:latest
+          docker build -t registry.digitalocean.com/${REGISTRY}/backend:${TAG} -t registry.digitalocean.com/${REGISTRY}/backend:latest .
+          docker push registry.digitalocean.com/${REGISTRY}/backend:${TAG}
+          docker push registry.digitalocean.com/${REGISTRY}/backend:latest
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -46,7 +49,34 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform apply -var-file="environments/prod.tfvars" -var="do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" -auto-approve
+          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-home-registry' }}"
+          TF_VARS="-var-file=environments/prod.tfvars -var=do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -var=docr_repository=backend"
+
+          # 1. Import PostgreSQL cluster if already provisioned
+          PG_ID=$(doctl databases list --format ID,Name --no-header | grep "abs-postgres-production" | awk '{print $1}' || true)
+          if [ -n "$PG_ID" ]; then
+            echo "Importing existing PostgreSQL cluster $PG_ID..."
+            terraform import $TF_VARS digitalocean_database_cluster.postgres "$PG_ID" || true
+            terraform import $TF_VARS digitalocean_database_db.abs_database "${PG_ID}/abs_smarthome" || true
+            terraform import $TF_VARS digitalocean_database_user.abs_user "${PG_ID}/abs_admin" || true
+          fi
+
+          # 2. Import Redis/Valkey cluster if already provisioned
+          REDIS_ID=$(doctl databases list --format ID,Name --no-header | grep "abs-redis-production" | awk '{print $1}' || true)
+          if [ -n "$REDIS_ID" ]; then
+            echo "Importing existing Redis/Valkey cluster $REDIS_ID..."
+            terraform import $TF_VARS digitalocean_database_cluster.redis "$REDIS_ID" || true
+          fi
+
+          # 3. Import App Platform app if already provisioned
+          APP_ID=$(doctl apps list --format ID,Spec.Name --no-header | grep "abs-home-backend-production" | awk '{print $1}' || true)
+          if [ -n "$APP_ID" ]; then
+            echo "Importing existing App Platform app $APP_ID..."
+            terraform import $TF_VARS digitalocean_app.backend_gateway "$APP_ID" || true
+          fi
+
+          # 4. Apply Terraform plan
+          terraform apply $TF_VARS -auto-approve
 
       - name: Export OpenAPI Spec & Trigger KMP SDK Sync
         run: |

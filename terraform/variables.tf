@@ -37,7 +37,7 @@ variable "app_instance_count" {
 variable "docr_repository" {
     description = "DigitalOcean Container Registry repository"
     type        = string
-    default     = "abs-registry/backend"
+    default     = "backend"
 }
 
 variable "image_tag" {

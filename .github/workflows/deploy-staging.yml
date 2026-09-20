@@ -31,11 +31,13 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DigitalOcean Container Registry (DOCR)
-        run: doctl registry login --expiry-seconds 1200
+        run: |
+          doctl registry login --read-write --expiry-seconds 1200
+          echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login registry.digitalocean.com -u "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" --password-stdin
 
       - name: Build and Push Staging Image
         run: |
-          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-registry' }}"
+          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-home-registry' }}"
           TAG="${GITHUB_REF_NAME:-staging}"
           docker build -t registry.digitalocean.com/${REGISTRY}/backend:staging -t registry.digitalocean.com/${REGISTRY}/backend:${TAG} .
           docker push registry.digitalocean.com/${REGISTRY}/backend:staging
@@ -50,8 +52,8 @@ jobs:
         run: |
           cd terraform
           terraform init
-          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-registry' }}"
-          TF_VARS="-var-file=environments/staging.tfvars -var=do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -var=docr_repository=${REGISTRY}/backend"
+          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-home-registry' }}"
+          TF_VARS="-var-file=environments/staging.tfvars -var=do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -var=docr_repository=backend"
 
           # 1. Import PostgreSQL cluster if already provisioned in DigitalOcean
           PG_ID=$(doctl databases list --format ID,Name --no-header | grep "abs-postgres-staging" | awk '{print $1}' || true)
@@ -78,4 +80,10 @@ jobs:
 
           # 4. Apply Terraform plan
           terraform apply $TF_VARS -auto-approve
+
+          # 5. Extract and print live staging URL
+          echo "=== STAGING LIVE URL ==="
+          APP_URL=$(doctl apps list --format DefaultIngress,Spec.Name --no-header | grep "abs-home-backend-staging" | awk '{print $1}' || true)
+          echo "Staging Ingress URL: https://${APP_URL}"
+
 
