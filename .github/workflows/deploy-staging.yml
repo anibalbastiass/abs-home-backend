@@ -51,9 +51,31 @@ jobs:
           cd terraform
           terraform init
           REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-registry' }}"
-          terraform apply \
-            -var-file="environments/staging.tfvars" \
-            -var="do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" \
-            -var="docr_repository=${REGISTRY}/backend" \
-            -auto-approve
+          TF_VARS="-var-file=environments/staging.tfvars -var=do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -var=docr_repository=${REGISTRY}/backend"
+
+          # 1. Import PostgreSQL cluster if already provisioned in DigitalOcean
+          PG_ID=$(doctl databases list --format ID,Name --no-header | grep "abs-postgres-staging" | awk '{print $1}' || true)
+          if [ -n "$PG_ID" ]; then
+            echo "Importing existing PostgreSQL cluster $PG_ID..."
+            terraform import $TF_VARS digitalocean_database_cluster.postgres "$PG_ID" || true
+            terraform import $TF_VARS digitalocean_database_db.abs_database "${PG_ID}/abs_smarthome" || true
+            terraform import $TF_VARS digitalocean_database_user.abs_user "${PG_ID}/abs_admin" || true
+          fi
+
+          # 2. Import Redis/Valkey cluster if already provisioned
+          REDIS_ID=$(doctl databases list --format ID,Name --no-header | grep "abs-redis-staging" | awk '{print $1}' || true)
+          if [ -n "$REDIS_ID" ]; then
+            echo "Importing existing Redis/Valkey cluster $REDIS_ID..."
+            terraform import $TF_VARS digitalocean_database_cluster.redis "$REDIS_ID" || true
+          fi
+
+          # 3. Import App Platform app if already provisioned
+          APP_ID=$(doctl apps list --format ID,Spec.Name --no-header | grep "abs-home-backend-staging" | awk '{print $1}' || true)
+          if [ -n "$APP_ID" ]; then
+            echo "Importing existing App Platform app $APP_ID..."
+            terraform import $TF_VARS digitalocean_app.backend_gateway "$APP_ID" || true
+          fi
+
+          # 4. Apply Terraform plan
+          terraform apply $TF_VARS -auto-approve
 
