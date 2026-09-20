@@ -32,7 +32,7 @@ jobs:
 
       - name: Log in to DigitalOcean Container Registry (DOCR)
         run: |
-          doctl registry login --read-write --expiry-seconds 1200
+          doctl registry login --expiry-seconds 1200
           echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login registry.digitalocean.com -u "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" --password-stdin
 
       - name: Build and Push Staging Image
