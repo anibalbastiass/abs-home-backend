@@ -1,8 +1,10 @@
 name: Deploy to Staging (DigitalOcean)
 
 on:
+  release:
+    types: [ published ]
   push:
-    branches: [ staging ]
+    branches: [ staging, 'releases/**' ]
   workflow_dispatch:
 
 jobs:
@@ -16,11 +18,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
 
       - name: Install Dependencies & Run Tests
         run: |
           npm ci
-          npm run test
+          npm run test:coverage
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -32,8 +35,11 @@ jobs:
 
       - name: Build and Push Staging Image
         run: |
-          docker build -t registry.digitalocean.com/abs-registry/backend:staging .
-          docker push registry.digitalocean.com/abs-registry/backend:staging
+          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-registry' }}"
+          TAG="${GITHUB_REF_NAME:-staging}"
+          docker build -t registry.digitalocean.com/${REGISTRY}/backend:staging -t registry.digitalocean.com/${REGISTRY}/backend:${TAG} .
+          docker push registry.digitalocean.com/${REGISTRY}/backend:staging
+          docker push registry.digitalocean.com/${REGISTRY}/backend:${TAG}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -44,4 +50,10 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform apply -var-file="environments/staging.tfvars" -var="do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" -auto-approve
+          REGISTRY="${{ secrets.DIGITALOCEAN_REGISTRY_NAME || 'abs-registry' }}"
+          terraform apply \
+            -var-file="environments/staging.tfvars" \
+            -var="do_token=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" \
+            -var="docr_repository=${REGISTRY}/backend" \
+            -auto-approve
+
