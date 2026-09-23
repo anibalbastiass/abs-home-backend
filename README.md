@@ -21,6 +21,7 @@ High-performance, modular **KoaJS + TypeScript** IoT gateway and domain control 
 
 | Resource | Description | Live Link |
 | :--- | :--- | :--- |
+| 🚀 **DigitalOcean Staging Gateway** | Live Cloud Backend REST API & Swagger UI | [abs-home-backend-staging-uabuk.ondigitalocean.app](https://abs-home-backend-staging-uabuk.ondigitalocean.app/docs) |
 | 📚 **Docusaurus Documentation** | Complete architectural guides, domain specifications, and runbooks | [anibalbastiass.github.io/abs-home-backend](https://anibalbastiass.github.io/abs-home-backend/) |
 | 📖 **Interactive Swagger UI** | Live browser-based OpenAPI explorer with schema testing | [anibalbastiass.github.io/abs-home-backend/swagger/](https://anibalbastiass.github.io/abs-home-backend/swagger/) |
 | 📋 **OpenAPI 3.1 Specification** | Raw OpenAPI JSON spec for Kotlin Multiplatform mobile codegen | [anibalbastiass.github.io/abs-home-backend/openapi.json](https://anibalbastiass.github.io/abs-home-backend/openapi.json) |

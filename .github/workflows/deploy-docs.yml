@@ -54,6 +54,8 @@ jobs:
       - name: Build Docusaurus Documentation Website
         run: npm run docs:build
 
+      # Enable Pages with GitHub Actions as its source in repository Settings > Pages.
+      # Automatic enablement requires an admin token beyond GITHUB_TOKEN.
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

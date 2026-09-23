@@ -33,6 +33,19 @@ Every pull request or release tag executes:
 
 ---
 
+## GitHub Pages documentation deployment
+
+Before the first documentation deployment, open **Settings → Pages → Build and deployment**
+in the GitHub repository and select **GitHub Actions** as the source. This is a one-time
+repository setup step. The workflow's `GITHUB_TOKEN` can deploy the site but cannot enable
+Pages automatically. If **Setup Pages** fails with `Not Found`, check this setting and
+rerun the documentation workflow.
+
+The `deploy-docs.yml` workflow exports OpenAPI, builds Docusaurus, and publishes the site
+when documentation-related files change on `main`. It also supports manual runs from
+the Actions tab. After deployment, verify the documentation homepage, `/swagger/`, and
+`/openapi.json` under `https://anibalbastiass.github.io/abs-home-backend/`.
+
 ## 🏷️ Release Protocol
 
 1. Bump version in `package.json`.
