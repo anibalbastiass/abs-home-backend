@@ -3,6 +3,8 @@ import { env, EnvConfig } from '@/config/env';
 import { prisma } from '@/core/database/prisma';
 import { queueManager, QueueManager } from '@/core/queues/queue-manager';
 import { kafkaManager, KafkaClientManager } from '@/core/events/kafka-client';
+import { WsManager, wsManager as defaultWsManager } from '@/core/websocket/ws-manager';
+import { WsEventBridge } from '@/core/websocket/event-bridge';
 
 // Adapters
 import { HueAdapter, hueAdapter } from '@/domains/devices/adapters/hue.adapter';
@@ -33,6 +35,8 @@ export interface AppContainer {
     prisma: PrismaClient;
     queueManager: QueueManager;
     kafkaManager: KafkaClientManager;
+    wsManager: WsManager;
+    wsEventBridge: WsEventBridge;
 
     // Adapters
     hueAdapter: HueAdapter;
@@ -77,6 +81,10 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
     const energySvc = overrides.energyService || new EnergyServiceImpl(db, km);
     const securitySvc = overrides.securityService || new SecurityServiceImpl(db, km);
 
+    const wsMgr = overrides.wsManager || defaultWsManager;
+    wsMgr.setDeviceService(deviceSvc);
+    const wsBridge = overrides.wsEventBridge || new WsEventBridge(km, wsMgr);
+
     const healthCtrl = overrides.healthController || new HealthController(healthSvc);
     const deviceCtrl = overrides.deviceController || new DeviceController(deviceSvc);
     const sceneCtrl = overrides.sceneController || new SceneController(sceneSvc);
@@ -89,6 +97,8 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
         prisma: db,
         queueManager: qm,
         kafkaManager: km,
+        wsManager: wsMgr,
+        wsEventBridge: wsBridge,
         hueAdapter: hue,
         nestAdapter: nest,
         switchbotAdapter: sb,

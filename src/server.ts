@@ -35,9 +35,19 @@ async function bootstrap(): Promise<void> {
         logger.info(`📖 OpenAPI 3.1 Spec available at http://localhost:${container.env.PORT}${container.env.API_PREFIX}/openapi.json`);
     });
 
-    // 5. Graceful Shutdown Handlers
+    // 5. Attach WebSocket Gateway and start Event Bridge
+    try {
+        container.wsManager.attachToServer(server, '/ws/events');
+        await container.wsEventBridge.start();
+        logger.info(`⚡ Real-time WebSocket Gateway active on ws://0.0.0.0:${container.env.PORT}/ws/events`);
+    } catch (err) {
+        logger.warn({ err }, '⚠️ WebSocket gateway attachment deferred');
+    }
+
+    // 6. Graceful Shutdown Handlers
     const shutdown = async (signal: string) => {
         logger.info(`Received ${signal}, shutting down gracefully...`);
+        await container.wsManager.close();
         server.close(async () => {
             logger.info('HTTP server closed');
             await container.queueManager.shutdown();
