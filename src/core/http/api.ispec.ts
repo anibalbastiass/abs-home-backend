@@ -9,12 +9,10 @@ import {
     createEnergyMetricFixture,
     createSecurityZoneFixture,
     createSecurityIncidentFixture,
-    createHealthStatusFixture,
     FIXTURE_IDS,
 } from '@/test/fixtures';
 
-describe('ABS Smart Home Backend — Integration Tests (Fixtures)', () => {
-    const healthFixture = createHealthStatusFixture();
+describe('HTTP API Integration Tests', () => {
     const deviceFixture = createDeviceFixture();
     const sceneFixture = createSceneFixture();
     const automationFixture = createAutomationFixture();
@@ -23,10 +21,17 @@ describe('ABS Smart Home Backend — Integration Tests (Fixtures)', () => {
     const incidentFixture = createSecurityIncidentFixture();
 
     const mockHealthService: any = {
-        getLiveness: vi.fn().mockReturnValue({ status: 'UP', timestamp: healthFixture.timestamp }),
+        getLiveness: vi.fn().mockReturnValue({ status: 'UP' }),
         getReadiness: vi.fn().mockResolvedValue({
             isReady: true,
-            health: healthFixture,
+            health: {
+                status: 'UP',
+                components: {
+                    database: { status: 'UP' },
+                    redis: { status: 'UP' },
+                    kafka: { status: 'UP' },
+                },
+            },
         }),
     };
 
@@ -54,10 +59,9 @@ describe('ABS Smart Home Backend — Integration Tests (Fixtures)', () => {
         }),
         executeCommand: vi.fn().mockResolvedValue({
             success: true,
-            jobId: 'cmd_1',
+            jobId: 'job-123',
             status: 'EXECUTED',
-            message: 'Command executed',
-            updatedState: { on: false },
+            message: 'Command executed successfully',
         }),
     };
 
@@ -69,11 +73,6 @@ describe('ABS Smart Home Backend — Integration Tests (Fixtures)', () => {
                 updatedAt: sceneFixture.updatedAt.toISOString(),
             },
         ]),
-        getSceneById: vi.fn().mockResolvedValue({
-            ...sceneFixture,
-            createdAt: sceneFixture.createdAt.toISOString(),
-            updatedAt: sceneFixture.updatedAt.toISOString(),
-        }),
         createScene: vi.fn().mockResolvedValue({
             ...sceneFixture,
             name: 'Movie Time',
@@ -82,19 +81,19 @@ describe('ABS Smart Home Backend — Integration Tests (Fixtures)', () => {
         }),
         triggerScene: vi.fn().mockResolvedValue({
             success: true,
-            sceneId: sceneFixture.id,
             executedActionsCount: 2,
-            message: 'Scene executed',
+            durationMs: 15,
         }),
     };
 
     const mockAutomationService: any = {
-        listAutomations: vi.fn().mockResolvedValue([]),
-        getAutomationById: vi.fn().mockResolvedValue({
-            ...automationFixture,
-            createdAt: automationFixture.createdAt.toISOString(),
-            updatedAt: automationFixture.updatedAt.toISOString(),
-        }),
+        listAutomations: vi.fn().mockResolvedValue([
+            {
+                ...automationFixture,
+                createdAt: automationFixture.createdAt.toISOString(),
+                updatedAt: automationFixture.updatedAt.toISOString(),
+            },
+        ]),
         createAutomation: vi.fn().mockResolvedValue({
             ...automationFixture,
             createdAt: automationFixture.createdAt.toISOString(),
@@ -102,10 +101,8 @@ describe('ABS Smart Home Backend — Integration Tests (Fixtures)', () => {
         }),
         executeAutomation: vi.fn().mockResolvedValue({
             success: true,
-            automationId: automationFixture.id,
             executedActionsCount: 1,
-            durationMs: 45,
-            status: 'SUCCESS',
+            durationMs: 10,
         }),
     };
 
@@ -314,5 +311,14 @@ describe('ABS Smart Home Backend — Integration Tests (Fixtures)', () => {
         });
         expect(res.status).toBe(201);
         expect(res.body.alertType).toBe(incidentFixture.alertType);
+    });
+
+    // SDUI
+    it('GET /api/v1/sdui/dashboard returns complete dynamic SDUI dashboard tree', async () => {
+        const res = await agent.get('/api/v1/sdui/dashboard');
+        expect(res.status).toBe(200);
+        expect(res.body.id).toBe('page_dashboard_user');
+        expect(Array.isArray(res.body.sections)).toBe(true);
+        expect(res.body.sections.length).toBeGreaterThanOrEqual(4);
     });
 });

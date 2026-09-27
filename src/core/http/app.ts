@@ -14,6 +14,7 @@ import { createSceneRouter } from '@/domains/scenes/routes';
 import { createAutomationRouter } from '@/domains/automations/routes';
 import { createEnergyRouter } from '@/domains/energy/routes';
 import { createSecurityRouter } from '@/domains/security/routes';
+import { createSduiRouter } from '@/domains/sdui/routes';
 
 export const createApp = (container: AppContainer = createContainer()): Koa => {
     const app = new Koa();
@@ -104,6 +105,7 @@ export const createApp = (container: AppContainer = createContainer()): Koa => {
     const automationRouter = createAutomationRouter(container.automationController);
     const energyRouter = createEnergyRouter(container.energyController);
     const securityRouter = createSecurityRouter(container.securityController);
+    const sduiRouter = createSduiRouter(container.sduiController);
 
     apiV1Router.use(healthRouter.routes()).use(healthRouter.allowedMethods());
     apiV1Router.use(deviceRouter.routes()).use(deviceRouter.allowedMethods());
@@ -111,6 +113,7 @@ export const createApp = (container: AppContainer = createContainer()): Koa => {
     apiV1Router.use(automationRouter.routes()).use(automationRouter.allowedMethods());
     apiV1Router.use(energyRouter.routes()).use(energyRouter.allowedMethods());
     apiV1Router.use(securityRouter.routes()).use(securityRouter.allowedMethods());
+    apiV1Router.use(sduiRouter.routes()).use(sduiRouter.allowedMethods());
 
     // Mount all routes
     app.use(rootRouter.routes()).use(rootRouter.allowedMethods());
