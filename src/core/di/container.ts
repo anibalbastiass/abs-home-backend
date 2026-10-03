@@ -21,6 +21,7 @@ import { AutomationService, AutomationServiceImpl } from '@/domains/automations/
 import { EnergyService, EnergyServiceImpl } from '@/domains/energy/service';
 import { SecurityService, SecurityServiceImpl } from '@/domains/security/service';
 import { SduiService, SduiServiceImpl } from '@/domains/sdui/service';
+import { SyncService, SyncServiceImpl } from '@/domains/sync/service';
 
 // Controllers
 import { HealthController } from '@/domains/health/controller';
@@ -30,6 +31,7 @@ import { AutomationController } from '@/domains/automations/controller';
 import { EnergyController } from '@/domains/energy/controller';
 import { SecurityController } from '@/domains/security/controller';
 import { SduiController } from '@/domains/sdui/controller';
+import { SyncController } from '@/domains/sync/controller';
 
 export interface AppContainer {
     // Infrastructure
@@ -55,6 +57,7 @@ export interface AppContainer {
     energyService: EnergyService;
     securityService: SecurityService;
     sduiService: SduiService;
+    syncService: SyncService;
 
     // Controllers
     healthController: HealthController;
@@ -64,6 +67,7 @@ export interface AppContainer {
     energyController: EnergyController;
     securityController: SecurityController;
     sduiController: SduiController;
+    syncController: SyncController;
 }
 
 export const createContainer = (overrides: Partial<AppContainer> = {}): AppContainer => {
@@ -85,6 +89,7 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
     const energySvc = overrides.energyService || new EnergyServiceImpl(db, km);
     const securitySvc = overrides.securityService || new SecurityServiceImpl(db, km);
     const sduiSvc = overrides.sduiService || new SduiServiceImpl(deviceSvc, securitySvc, energySvc, autoSvc);
+    const syncSvc = overrides.syncService || new SyncServiceImpl(db);
 
     const wsMgr = overrides.wsManager || defaultWsManager;
     wsMgr.setDeviceService(deviceSvc);
@@ -97,6 +102,7 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
     const energyCtrl = overrides.energyController || new EnergyController(energySvc);
     const securityCtrl = overrides.securityController || new SecurityController(securitySvc);
     const sduiCtrl = overrides.sduiController || new SduiController(sduiSvc);
+    const syncCtrl = overrides.syncController || new SyncController(syncSvc);
 
     return {
         env: config,
@@ -117,6 +123,7 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
         energyService: energySvc,
         securityService: securitySvc,
         sduiService: sduiSvc,
+        syncService: syncSvc,
         healthController: healthCtrl,
         deviceController: deviceCtrl,
         sceneController: sceneCtrl,
@@ -124,5 +131,6 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
         energyController: energyCtrl,
         securityController: securityCtrl,
         sduiController: sduiCtrl,
+        syncController: syncCtrl,
     };
 };
