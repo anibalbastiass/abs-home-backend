@@ -2,7 +2,7 @@
 
 [![CI / Quality Gate](https://github.com/anibalbastiass/abs-home-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/anibalbastiass/abs-home-backend/actions/workflows/ci.yml)
 [![Docs & Swagger](https://github.com/anibalbastiass/abs-home-backend/actions/workflows/deploy-docs.yml/badge.svg)](https://anibalbastiass.github.io/abs-home-backend/)
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/anibalbastiass/abs-home-backend/releases)
+[![Version](https://img.shields.io/badge/version-1.5.1-blue.svg)](https://github.com/anibalbastiass/abs-home-backend/releases)
 [![Coverage](https://img.shields.io/badge/coverage-94.46%25-brightgreen.svg)](https://github.com/anibalbastiass/abs-home-backend)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-22%20LTS-green?logo=node.js)](https://nodejs.org/)
@@ -103,6 +103,10 @@ flowchart TD
 - **OpenAPI 3.1 & KMP Synchronization**: Automated OpenAPI generation for Kotlin Multiplatform client SDKs.
 - **Co-Located Test Strategy**: `*.spec.ts` (unit) and `*.ispec.ts` (integration) co-located next to production code with shared fixtures.
 - **Terraform Infrastructure as Code**: Automated provisioning of DigitalOcean App Platform, PostgreSQL 16, and Redis 7.
+
+### Mobile user exports
+
+`POST /api/v1/sync/seed` stores a mobile export in user-scoped tables, and `GET /api/v1/sync/users/{userId}` returns it. Both routes require a signed Firebase ID token from the configured `FIREBASE_PROJECT_ID`. The requested user ID must match the token's Firebase UID or a Google account ID in the token's signed `firebase.identities["google.com"]` claim. The Google match lets a user read older mobile exports that were keyed by Google account ID. Unsigned development tokens are rejected. These exports are separate from the gateway's active device and automation tables.
 
 ---
 

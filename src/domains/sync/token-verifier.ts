@@ -5,8 +5,10 @@ const FIREBASE_CERTS_URL =
     'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 
 export interface TokenVerifier {
-    verify(token: string): Promise<string>;
+    verify(token: string): Promise<VerifiedIdentity>;
 }
+
+export type VerifiedIdentity = { uid: string; googleUserIds: string[] };
 
 type CertificateCache = { values: Record<string, string>; expiresAt: number };
 
@@ -18,7 +20,7 @@ export class FirebaseTokenVerifier implements TokenVerifier {
         private readonly fetchCertificates: typeof fetch = fetch,
     ) {}
 
-    public async verify(token: string): Promise<string> {
+    public async verify(token: string): Promise<VerifiedIdentity> {
         if (!this.projectId) throw new UnauthorizedError('Firebase authentication is not configured');
 
         const parts = token.split('.');
@@ -58,7 +60,15 @@ export class FirebaseTokenVerifier implements TokenVerifier {
             ) {
                 throw new UnauthorizedError('Invalid authentication token');
             }
-            return claims.sub;
+            const firebase = claims.firebase as Record<string, unknown> | undefined;
+            const identities = firebase?.identities as Record<string, unknown> | undefined;
+            const googleUserIds = Array.isArray(identities?.['google.com'])
+                ? identities['google.com'].filter(
+                    (value: unknown): value is string =>
+                        typeof value === 'string' && value.length > 0 && value.length <= 128,
+                )
+                : [];
+            return { uid: claims.sub, googleUserIds };
         } catch (error) {
             if (error instanceof UnauthorizedError) throw error;
             throw new UnauthorizedError('Invalid authentication token');

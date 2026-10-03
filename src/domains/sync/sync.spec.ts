@@ -36,7 +36,9 @@ describe('mobile sync contract', () => {
 
     it('rejects requests without a token or for another user before reading or writing data', async () => {
         const service = { seedUserData: vi.fn(), getUserSnapshot: vi.fn() };
-        const controller = new SyncController(service, { verify: vi.fn().mockResolvedValue('firebase-user-1') });
+        const controller = new SyncController(service, {
+            verify: vi.fn().mockResolvedValue({ uid: 'firebase-user-1', googleUserIds: [] }),
+        });
         const context = {
             get: vi.fn().mockReturnValue(''),
             request: { body: payload },
@@ -52,6 +54,23 @@ describe('mobile sync contract', () => {
         expect(service.getUserSnapshot).not.toHaveBeenCalled();
     });
 
+    it('rejects unsigned development tokens instead of trusting their claimed user', async () => {
+        const service = { seedUserData: vi.fn(), getUserSnapshot: vi.fn() };
+        const verifier = { verify: vi.fn().mockRejectedValue(new UnauthorizedError('Invalid token')) };
+        const controller = new SyncController(service, verifier);
+        const context = {
+            get: vi.fn().mockReturnValue('Bearer dev-firebase-user-1'),
+            request: { body: payload },
+            params: { userId: payload.userId },
+        } as unknown as Context;
+
+        await expect(controller.seed(context)).rejects.toBeInstanceOf(UnauthorizedError);
+        await expect(controller.getUserSnapshot(context)).rejects.toBeInstanceOf(UnauthorizedError);
+        expect(verifier.verify).toHaveBeenCalledWith('dev-firebase-user-1');
+        expect(service.seedUserData).not.toHaveBeenCalled();
+        expect(service.getUserSnapshot).not.toHaveBeenCalled();
+    });
+
     it('validates and routes a matching user export', async () => {
         const result = {
             success: true as const,
@@ -61,7 +80,9 @@ describe('mobile sync contract', () => {
             message: 'Seeded',
         };
         const service = { seedUserData: vi.fn().mockResolvedValue(result), getUserSnapshot: vi.fn().mockResolvedValue(payload) };
-        const controller = new SyncController(service, { verify: vi.fn().mockResolvedValue(payload.userId) });
+        const controller = new SyncController(service, {
+            verify: vi.fn().mockResolvedValue({ uid: payload.userId, googleUserIds: [] }),
+        });
         const context = {
             get: vi.fn().mockReturnValue('Bearer valid-token'),
             request: { body: payload },
@@ -74,6 +95,25 @@ describe('mobile sync contract', () => {
         expect(service.seedUserData).toHaveBeenCalledWith(payload);
         await controller.getUserSnapshot(context);
         expect(service.getUserSnapshot).toHaveBeenCalledWith(payload.userId);
+    });
+
+    it('allows a verified Google identity to read an older export keyed by Google subject', async () => {
+        const service = { seedUserData: vi.fn(), getUserSnapshot: vi.fn().mockResolvedValue(payload) };
+        const controller = new SyncController(service, {
+            verify: vi.fn().mockResolvedValue({ uid: 'firebase-uid', googleUserIds: [payload.userId] }),
+        });
+        const context = {
+            get: vi.fn().mockReturnValue('Bearer valid-token'),
+            request: { body: payload },
+            params: { userId: payload.userId },
+        } as unknown as Context;
+
+        await controller.getUserSnapshot(context);
+        expect(service.getUserSnapshot).toHaveBeenCalledWith(payload.userId);
+        await controller.seed(context);
+        expect(service.seedUserData).toHaveBeenCalledWith(payload);
+        context.params.userId = 'another-google-user';
+        await expect(controller.getUserSnapshot(context)).rejects.toBeInstanceOf(ForbiddenError);
     });
 });
 
@@ -158,8 +198,18 @@ describe('Firebase token verification', () => {
             }),
         );
         const verifier = new FirebaseTokenVerifier(projectId, fetchCertificates);
-        expect(await verifier.verify(makeToken(claims()))).toBe(payload.userId);
-        expect(await verifier.verify(makeToken(claims()))).toBe(payload.userId);
+        const linkedClaims = {
+            ...claims(),
+            firebase: { identities: { 'google.com': ['google-subject-1'] } },
+        };
+        expect(await verifier.verify(makeToken(linkedClaims))).toEqual({
+            uid: payload.userId,
+            googleUserIds: ['google-subject-1'],
+        });
+        expect(await verifier.verify(makeToken(linkedClaims))).toEqual({
+            uid: payload.userId,
+            googleUserIds: ['google-subject-1'],
+        });
         expect(fetchCertificates).toHaveBeenCalledOnce();
         await expect(verifier.verify(makeToken({ ...claims(), aud: 'other-project' }))).rejects.toBeInstanceOf(
             UnauthorizedError,
