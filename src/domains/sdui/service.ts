@@ -17,12 +17,13 @@ export class SduiServiceImpl implements SduiService {
     ) {}
 
     public async getDashboardLayout(homeId = 'default-home'): Promise<SDUIPage> {
+        const targetHomeId = homeId && homeId !== 'default-home' ? homeId : undefined;
         // Fetch domain states concurrently
         const [devicesResult, securityResult, energyResult, automationsResult] = await Promise.allSettled([
-            this.deviceService.listDevices({ homeId }),
-            this.securityService.getStatus(homeId),
+            this.deviceService.listDevices({ homeId: targetHomeId }),
+            this.securityService.getStatus(targetHomeId),
             this.energyService.getSummary('meter-main'),
-            this.automationService.listAutomations(homeId),
+            this.automationService.listAutomations(targetHomeId),
         ]);
 
         const devices = devicesResult.status === 'fulfilled' ? devicesResult.value : [];

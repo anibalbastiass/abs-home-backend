@@ -202,6 +202,14 @@ describe('HTTP API Integration Tests', () => {
         expect(res.body[0].name).toBe(deviceFixture.name);
     });
 
+    it('GET /api/v1/devices supports userId query and dev token header', async () => {
+        const resQuery = await agent.get('/api/v1/devices?userId=test-user-id');
+        expect(resQuery.status).toBe(200);
+
+        const resToken = await agent.get('/api/v1/devices').set('Authorization', 'Bearer dev-test-user-id');
+        expect(resToken.status).toBe(200);
+    });
+
     it('GET /api/v1/devices/:id returns device details', async () => {
         const res = await agent.get(`/api/v1/devices/${FIXTURE_IDS.DEVICE_HUE}`);
         expect(res.status).toBe(200);

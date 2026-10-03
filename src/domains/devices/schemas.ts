@@ -33,8 +33,10 @@ export const DeviceResponseSchema = z.object({
 export const ListDevicesQuerySchema = z.object({
     vendor: DeviceVendorEnum.optional(),
     type: DeviceTypeEnum.optional(),
-    roomId: z.string().uuid().optional(),
-    homeId: z.string().uuid().optional(),
+    roomId: z.string().optional(),
+    homeId: z.string().optional(),
+    userId: z.string().optional(),
+    userEmail: z.string().optional(),
 });
 
 export const DeviceCommandRequestSchema = z.object({

@@ -1,5 +1,6 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, Role, DeviceVendor, DeviceType } from '@prisma/client';
 import { NotFoundError } from '@/core/errors/app-error';
+import { logger } from '@/core/logger/logger';
 import {
     SeedUserDataRequest,
     SeedUserDataResult,
@@ -23,6 +24,7 @@ export class SyncServiceImpl implements SyncService {
         const seededAt = new Date();
 
         await this.prisma.$transaction(async (tx) => {
+            // 1. Snapshot update in Synced* tables
             await tx.syncedUser.upsert({
                 where: { id: request.userId },
                 create: {
@@ -90,7 +92,148 @@ export class SyncServiceImpl implements SyncService {
                     })),
                 });
             }
+
+            // 2. Synchronize to Active Domain Entities (User, Home, Room, Device, AutomationRule)
+            const userEmail = request.userId.includes('@')
+                ? request.userId
+                : `${request.userId.toLowerCase().replace(/[^a-z0-9]/g, '_')}@abshome.dev`;
+
+            let user = await tx.user.findFirst({
+                where: {
+                    OR: [
+                        { id: request.userId },
+                        { email: userEmail },
+                        { email: request.userId },
+                    ],
+                },
+            });
+
+            if (!user) {
+                user = await tx.user.create({
+                    data: {
+                        email: userEmail,
+                        name: `User ${request.userId}`,
+                        role: Role.MEMBER,
+                    },
+                });
+            }
+
+            let home = await tx.home.findFirst({
+                where: { ownerId: user.id },
+            });
+
+            if (!home) {
+                home = await tx.home.create({
+                    data: {
+                        name: `${user.name}'s Residence`,
+                        timezone: 'America/Santiago',
+                        ownerId: user.id,
+                    },
+                });
+            }
+
+            // Upsert Domain Rooms
+            const roomMap = new Map<string, string>();
+            for (const r of rooms) {
+                let roomRecord = await tx.room.findFirst({
+                    where: {
+                        homeId: home.id,
+                        name: { equals: r.name, mode: 'insensitive' },
+                    },
+                });
+
+                if (!roomRecord) {
+                    roomRecord = await tx.room.create({
+                        data: {
+                            name: r.name,
+                            icon: r.icon || 'sofa',
+                            homeId: home.id,
+                        },
+                    });
+                } else {
+                    roomRecord = await tx.room.update({
+                        where: { id: roomRecord.id },
+                        data: { icon: r.icon || roomRecord.icon },
+                    });
+                }
+                roomMap.set(r.name.toLowerCase(), roomRecord.id);
+            }
+
+            // Upsert Domain Devices
+            for (const dev of devices) {
+                const vendor = this.mapVendor(dev.vendor);
+                const type = this.mapType(dev.type);
+                const roomId = dev.roomName ? roomMap.get(dev.roomName.toLowerCase()) : undefined;
+
+                await tx.device.upsert({
+                    where: {
+                        vendor_externalId: {
+                            vendor,
+                            externalId: dev.externalId,
+                        },
+                    },
+                    create: {
+                        externalId: dev.externalId,
+                        vendor,
+                        type,
+                        name: dev.name,
+                        roomId: roomId || null,
+                        homeId: home.id,
+                        state: (dev.state || {}) as Prisma.InputJsonValue,
+                        capabilities: (dev.capabilities || []) as Prisma.InputJsonValue,
+                        isOnline: dev.isOnline ?? true,
+                    },
+                    update: {
+                        name: dev.name,
+                        type,
+                        roomId: roomId || null,
+                        homeId: home.id,
+                        state: (dev.state || {}) as Prisma.InputJsonValue,
+                        capabilities: (dev.capabilities || []) as Prisma.InputJsonValue,
+                        isOnline: dev.isOnline ?? true,
+                        lastSeenAt: new Date(),
+                    },
+                });
+            }
+
+            // Upsert Domain Automations
+            for (const routine of routines) {
+                const existingAuto = await tx.automationRule.findFirst({
+                    where: {
+                        homeId: home.id,
+                        name: routine.name,
+                    },
+                });
+
+                if (existingAuto) {
+                    await tx.automationRule.update({
+                        where: { id: existingAuto.id },
+                        data: {
+                            isEnabled: routine.isEnabled,
+                            triggerType: routine.triggerType || 'MANUAL',
+                            triggerCondition: { type: routine.triggerType || 'MANUAL' },
+                            actions: (routine.actions || []) as Prisma.InputJsonValue,
+                        },
+                    });
+                } else {
+                    await tx.automationRule.create({
+                        data: {
+                            name: routine.name,
+                            isEnabled: routine.isEnabled,
+                            triggerType: routine.triggerType || 'MANUAL',
+                            triggerCondition: { type: routine.triggerType || 'MANUAL' },
+                            actions: (routine.actions || []) as Prisma.InputJsonValue,
+                            homeId: home.id,
+                        },
+                    });
+                }
+            }
         });
+
+        logger.info(
+            { userId: request.userId, deviceCount: devices.length, roomCount: rooms.length },
+            '🌱 Mobile IoT fleet, rooms, and automations synced successfully to active domain models',
+        );
 
         return {
             success: true,
@@ -102,7 +245,7 @@ export class SyncServiceImpl implements SyncService {
                 routinesSeeded: routines.length,
                 preferencesUpdated: request.userPreferences != null,
             },
-            message: 'Mobile user data seeded successfully.',
+            message: 'Mobile user data seeded and synced to smart home domain successfully.',
         };
     }
 
@@ -145,5 +288,54 @@ export class SyncServiceImpl implements SyncService {
                 actions: item.actions,
             })),
         });
+    }
+
+    private mapVendor(raw: string): DeviceVendor {
+        const upper = (raw || '').toUpperCase();
+        switch (upper) {
+            case 'HUE':
+            case 'PHILIPS_HUE':
+                return DeviceVendor.HUE;
+            case 'NEST':
+            case 'GOOGLE_NEST':
+                return DeviceVendor.NEST;
+            case 'SWITCHBOT':
+                return DeviceVendor.SWITCHBOT;
+            case 'RING':
+                return DeviceVendor.RING;
+            case 'BLINK':
+                return DeviceVendor.BLINK;
+            case 'ENERGY_METER':
+            case 'SHELLY':
+                return DeviceVendor.ENERGY_METER;
+            default:
+                return DeviceVendor.CUSTOM;
+        }
+    }
+
+    private mapType(raw: string): DeviceType {
+        const upper = (raw || '').toUpperCase();
+        switch (upper) {
+            case 'LIGHT':
+                return DeviceType.LIGHT;
+            case 'THERMOSTAT':
+                return DeviceType.THERMOSTAT;
+            case 'CURTAIN':
+                return DeviceType.CURTAIN;
+            case 'BOT':
+                return DeviceType.BOT;
+            case 'CAMERA':
+                return DeviceType.CAMERA;
+            case 'DOORBELL':
+                return DeviceType.DOORBELL;
+            case 'PLUG':
+                return DeviceType.PLUG;
+            case 'SENSOR':
+                return DeviceType.SENSOR;
+            case 'ENERGY_METER':
+                return DeviceType.ENERGY_METER;
+            default:
+                return DeviceType.LIGHT;
+        }
     }
 }

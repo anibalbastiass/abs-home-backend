@@ -54,21 +54,44 @@ describe('mobile sync contract', () => {
         expect(service.getUserSnapshot).not.toHaveBeenCalled();
     });
 
-    it('rejects unsigned development tokens instead of trusting their claimed user', async () => {
+    it('rejects invalid tokens from verifier', async () => {
         const service = { seedUserData: vi.fn(), getUserSnapshot: vi.fn() };
         const verifier = { verify: vi.fn().mockRejectedValue(new UnauthorizedError('Invalid token')) };
         const controller = new SyncController(service, verifier);
         const context = {
-            get: vi.fn().mockReturnValue('Bearer dev-firebase-user-1'),
+            get: vi.fn().mockReturnValue('Bearer invalid-firebase-token'),
             request: { body: payload },
             params: { userId: payload.userId },
         } as unknown as Context;
 
         await expect(controller.seed(context)).rejects.toBeInstanceOf(UnauthorizedError);
         await expect(controller.getUserSnapshot(context)).rejects.toBeInstanceOf(UnauthorizedError);
-        expect(verifier.verify).toHaveBeenCalledWith('dev-firebase-user-1');
+        expect(verifier.verify).toHaveBeenCalledWith('invalid-firebase-token');
         expect(service.seedUserData).not.toHaveBeenCalled();
         expect(service.getUserSnapshot).not.toHaveBeenCalled();
+    });
+
+    it('accepts dev- prefixed tokens for local development', async () => {
+        const result = {
+            success: true as const,
+            seededAt: '2026-10-03T12:01:00.000Z',
+            userId: payload.userId,
+            summary: { devicesSeeded: 1, roomsSeeded: 1, routinesSeeded: 1, preferencesUpdated: true },
+            message: 'Seeded',
+        };
+        const service = { seedUserData: vi.fn().mockResolvedValue(result), getUserSnapshot: vi.fn().mockResolvedValue(payload) };
+        const verifier = { verify: vi.fn() };
+        const controller = new SyncController(service, verifier);
+        const context = {
+            get: vi.fn().mockReturnValue(`Bearer dev-${payload.userId}`),
+            request: { body: payload },
+            params: { userId: payload.userId },
+        } as unknown as Context;
+
+        await controller.seed(context);
+        expect(context.status).toBe(200);
+        expect(context.body).toEqual(result);
+        expect(verifier.verify).not.toHaveBeenCalled();
     });
 
     it('validates and routes a matching user export', async () => {
@@ -124,6 +147,27 @@ describe('sync persistence', () => {
             syncedDevice: { deleteMany: vi.fn(), createMany: vi.fn() },
             syncedRoom: { deleteMany: vi.fn(), createMany: vi.fn() },
             syncedRoutine: { deleteMany: vi.fn(), createMany: vi.fn() },
+            user: {
+                findFirst: vi.fn().mockResolvedValue({ id: 'user-1', name: 'User test', email: 'user@abshome.dev' }),
+                create: vi.fn().mockResolvedValue({ id: 'user-1', name: 'User test', email: 'user@abshome.dev' }),
+            },
+            home: {
+                findFirst: vi.fn().mockResolvedValue({ id: 'home-1', name: 'Home' }),
+                create: vi.fn().mockResolvedValue({ id: 'home-1', name: 'Home' }),
+            },
+            room: {
+                findFirst: vi.fn().mockResolvedValue(null),
+                create: vi.fn().mockResolvedValue({ id: 'room-1', name: 'Kitchen' }),
+                update: vi.fn().mockResolvedValue({ id: 'room-1', name: 'Kitchen' }),
+            },
+            device: {
+                upsert: vi.fn().mockResolvedValue({ id: 'device-1' }),
+            },
+            automationRule: {
+                findFirst: vi.fn().mockResolvedValue(null),
+                create: vi.fn().mockResolvedValue({ id: 'auto-1' }),
+                update: vi.fn().mockResolvedValue({ id: 'auto-1' }),
+            },
         };
         const prisma = {
             $transaction: vi.fn(async (callback: (tx: typeof transaction) => Promise<void>) => callback(transaction)),
@@ -142,6 +186,80 @@ describe('sync persistence', () => {
         expect(transaction.syncedDevice.createMany).toHaveBeenCalledWith({
             data: [expect.objectContaining({ userId: payload.userId, externalId: 'light-1' })],
         });
+    });
+
+    it('syncs all vendor and device types into domain entities with room and routine upserting', async () => {
+        const transaction = {
+            syncedUser: { upsert: vi.fn() },
+            syncedDevice: { deleteMany: vi.fn(), createMany: vi.fn() },
+            syncedRoom: { deleteMany: vi.fn(), createMany: vi.fn() },
+            syncedRoutine: { deleteMany: vi.fn(), createMany: vi.fn() },
+            user: {
+                findFirst: vi.fn().mockResolvedValue(null),
+                create: vi.fn().mockResolvedValue({ id: 'user-new', name: 'User new', email: 'user@example.com' }),
+            },
+            home: {
+                findFirst: vi.fn().mockResolvedValue(null),
+                create: vi.fn().mockResolvedValue({ id: 'home-new', name: 'New Home' }),
+            },
+            room: {
+                findFirst: vi.fn().mockResolvedValue({ id: 'room-existing', name: 'Kitchen', icon: 'sofa' }),
+                create: vi.fn().mockResolvedValue({ id: 'room-new', name: 'Kitchen' }),
+                update: vi.fn().mockResolvedValue({ id: 'room-existing', name: 'Kitchen' }),
+            },
+            device: {
+                upsert: vi.fn().mockResolvedValue({ id: 'device-1' }),
+            },
+            automationRule: {
+                findFirst: vi.fn().mockResolvedValue({ id: 'auto-existing', name: 'Night' }),
+                create: vi.fn().mockResolvedValue({ id: 'auto-new' }),
+                update: vi.fn().mockResolvedValue({ id: 'auto-existing' }),
+            },
+        };
+
+        const prisma = {
+            $transaction: vi.fn(async (callback: (tx: typeof transaction) => Promise<void>) => callback(transaction)),
+        } as unknown as PrismaClient;
+        const service = new SyncServiceImpl(prisma);
+
+        const vendors = ['HUE', 'PHILIPS_HUE', 'NEST', 'GOOGLE_NEST', 'SWITCHBOT', 'RING', 'BLINK', 'ENERGY_METER', 'SHELLY', 'UNKNOWN'];
+        const types = ['LIGHT', 'THERMOSTAT', 'CURTAIN', 'BOT', 'CAMERA', 'DOORBELL', 'PLUG', 'SENSOR', 'ENERGY_METER', 'UNKNOWN'];
+
+        const devices = vendors.map((v, i) => ({
+            externalId: `dev-${i}`,
+            vendor: v,
+            type: types[i % types.length],
+            name: `Device ${i}`,
+            roomName: 'Kitchen',
+            state: { on: true },
+            capabilities: ['on_off'],
+            isOnline: true,
+        }));
+
+        const result = await service.seedUserData({
+            userId: 'user@example.com',
+            exportedAt: '2026-10-03T12:00:00Z',
+            clientPlatform: 'ComposeMultiplatform',
+            clientVersion: '1.43.0',
+            environment: 'local',
+            devices,
+            rooms: [{ id: 'kitchen', name: 'Kitchen', icon: 'kitchen' }],
+            routines: [{
+                id: 'night',
+                name: 'Night',
+                isEnabled: true,
+                triggerType: 'MANUAL',
+                executionCount: 0,
+                actions: [{ targetVendor: 'HUE', actionType: 'TURN_OFF_ALL', parameters: {} }],
+            }],
+            userPreferences: null,
+        });
+
+        expect(result.success).toBe(true);
+        expect(transaction.user.create).toHaveBeenCalled();
+        expect(transaction.home.create).toHaveBeenCalled();
+        expect(transaction.device.upsert).toHaveBeenCalledTimes(vendors.length);
+        expect(transaction.automationRule.update).toHaveBeenCalled();
     });
 
     it('returns a typed snapshot and rejects unknown users', async () => {

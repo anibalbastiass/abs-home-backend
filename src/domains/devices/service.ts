@@ -79,12 +79,32 @@ export class DeviceServiceImpl implements DeviceService {
     }
 
     public async listDevices(query: ListDevicesQuery): Promise<DeviceResponse[]> {
+        let targetHomeId = query.homeId && query.homeId !== 'default-home' ? query.homeId : undefined;
+
+        if (!targetHomeId && (query.userId || query.userEmail)) {
+            const cleanId = (query.userId || '').toLowerCase().replace(/[^a-z0-9]/g, '_');
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    OR: [
+                        query.userId ? { id: query.userId } : {},
+                        query.userId ? { email: query.userId } : {},
+                        query.userId ? { email: `${cleanId}@abshome.dev` } : {},
+                        query.userEmail ? { email: query.userEmail } : {},
+                    ],
+                },
+                include: { homes: true },
+            });
+            if (user && user.homes.length > 0) {
+                targetHomeId = user.homes[0].id;
+            }
+        }
+
         const devices = await this.prisma.device.findMany({
             where: {
-                vendor: query.vendor as never,
-                type: query.type as never,
-                roomId: query.roomId,
-                homeId: query.homeId,
+                ...(query.vendor ? { vendor: query.vendor as never } : {}),
+                ...(query.type ? { type: query.type as never } : {}),
+                ...(query.roomId ? { roomId: query.roomId } : {}),
+                ...(targetHomeId ? { homeId: targetHomeId } : {}),
             },
             orderBy: { name: 'asc' },
         });

@@ -11,6 +11,15 @@ export class DeviceController {
 
     public list = async (ctx: Context): Promise<void> => {
         const query = ListDevicesQuerySchema.parse(ctx.query);
+        if (!query.userId && !query.userEmail) {
+            const authHeader = ctx.get('Authorization');
+            if (authHeader) {
+                const match = /^Bearer dev-([^\s]+)$/.exec(authHeader);
+                if (match) {
+                    query.userId = match[1];
+                }
+            }
+        }
         const devices = await this.deviceService.listDevices(query);
         ctx.status = 200;
         ctx.body = devices;

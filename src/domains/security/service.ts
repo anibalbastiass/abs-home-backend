@@ -22,8 +22,9 @@ export class SecurityServiceImpl implements SecurityService {
     ) {}
 
     public async getStatus(homeId?: string): Promise<SecuritySystemStatusResponse> {
+        const targetHomeId = homeId && homeId !== 'default-home' ? homeId : undefined;
         const zones = await this.prisma.securityZone.findMany({
-            where: homeId ? { homeId } : {},
+            where: targetHomeId ? { homeId: targetHomeId } : {},
             orderBy: { name: 'asc' },
         });
 

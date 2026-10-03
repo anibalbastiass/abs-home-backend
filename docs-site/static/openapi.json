@@ -2778,8 +2778,7 @@
                     },
                     {
                         "schema": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                         },
                         "required": false,
                         "name": "roomId",
@@ -2787,11 +2786,26 @@
                     },
                     {
                         "schema": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                         },
                         "required": false,
                         "name": "homeId",
+                        "in": "query"
+                    },
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": false,
+                        "name": "userId",
+                        "in": "query"
+                    },
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": false,
+                        "name": "userEmail",
                         "in": "query"
                     }
                 ],

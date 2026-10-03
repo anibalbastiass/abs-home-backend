@@ -17,6 +17,9 @@ describe('DeviceServiceImpl', () => {
             findUnique: vi.fn(),
             update: vi.fn(),
         },
+        user: {
+            findFirst: vi.fn(),
+        },
     };
 
     const mockQueueManager = new QueueManager();
@@ -46,6 +49,36 @@ describe('DeviceServiceImpl', () => {
         expect(result).toHaveLength(1);
         expect(result[0].id).toBe(fixture.id);
         expect(result[0].name).toBe(fixture.name);
+    });
+
+    it('should resolve homeId when userId or userEmail is provided in listDevices', async () => {
+        const fixture = createDeviceFixture();
+        mockPrisma.user.findFirst.mockResolvedValueOnce({
+            id: 'u1',
+            email: 'user@abshome.dev',
+            homes: [{ id: fixture.homeId }],
+        });
+        mockPrisma.device.findMany.mockResolvedValueOnce([fixture]);
+
+        const result = await service.listDevices({ userId: 'u1', userEmail: 'user@abshome.dev' });
+        expect(result).toHaveLength(1);
+        expect(mockPrisma.user.findFirst).toHaveBeenCalled();
+    });
+
+    it('should list devices with room and type filter and handle missing user', async () => {
+        mockPrisma.user.findFirst.mockResolvedValueOnce(null);
+        mockPrisma.device.findMany.mockResolvedValueOnce([]);
+
+        const result = await service.listDevices({ type: 'LIGHT', roomId: 'r1', userId: 'unknown' });
+        expect(result).toHaveLength(0);
+    });
+
+    it('should handle user without homes in listDevices', async () => {
+        mockPrisma.user.findFirst.mockResolvedValueOnce({ id: 'u2', email: 'u2@test.com', homes: [] });
+        mockPrisma.device.findMany.mockResolvedValueOnce([]);
+
+        const result = await service.listDevices({ userId: 'u2' });
+        expect(result).toHaveLength(0);
     });
 
     it('should throw NotFoundError for nonexistent device', async () => {
@@ -104,15 +137,21 @@ describe('DeviceServiceImpl', () => {
         expect(sbCurtainRes.success).toBe(true);
         const sbPressRes = await sbHandler({ commandId: '6', vendor: 'switchbot', deviceId: 's1', action: 'press', params: {} });
         expect(sbPressRes.success).toBe(true);
+        const sbFallbackRes = await sbHandler({ commandId: '6b', vendor: 'switchbot', deviceId: 's1', action: 'unknown', params: {} });
+        expect(sbFallbackRes.success).toBe(true);
 
         // Ring handler
         const ringHandler = handlers.get('ring');
         const ringSirenRes = await ringHandler({ commandId: '7', vendor: 'ring', deviceId: 'r1', action: 'trigger_siren', params: { duration: 10 } });
         expect(ringSirenRes.success).toBe(true);
+        const ringFallbackRes = await ringHandler({ commandId: '7b', vendor: 'ring', deviceId: 'r1', action: 'unknown', params: {} });
+        expect(ringFallbackRes.success).toBe(true);
 
         // Blink handler
         const blinkHandler = handlers.get('blink');
         const blinkArmRes = await blinkHandler({ commandId: '8', vendor: 'blink', deviceId: 'b1', action: 'arm', params: { armed: true } });
         expect(blinkArmRes.success).toBe(true);
+        const blinkFallbackRes = await blinkHandler({ commandId: '8b', vendor: 'blink', deviceId: 'b1', action: 'unknown', params: {} });
+        expect(blinkFallbackRes.success).toBe(true);
     });
 });

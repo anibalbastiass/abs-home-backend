@@ -22,8 +22,9 @@ export class SceneServiceImpl implements SceneService {
     ) {}
 
     public async listScenes(homeId?: string): Promise<SceneResponse[]> {
+        const targetHomeId = homeId && homeId !== 'default-home' ? homeId : undefined;
         const scenes = await this.prisma.scene.findMany({
-            where: homeId ? { homeId } : {},
+            where: targetHomeId ? { homeId: targetHomeId } : {},
             include: {
                 actions: {
                     orderBy: { order: 'asc' },

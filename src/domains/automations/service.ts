@@ -25,8 +25,9 @@ export class AutomationServiceImpl implements AutomationService {
     ) {}
 
     public async listAutomations(homeId?: string): Promise<AutomationRuleResponse[]> {
+        const targetHomeId = homeId && homeId !== 'default-home' ? homeId : undefined;
         const automations = await this.prisma.automationRule.findMany({
-            where: homeId ? { homeId } : {},
+            where: targetHomeId ? { homeId: targetHomeId } : {},
             orderBy: { name: 'asc' },
         });
 
