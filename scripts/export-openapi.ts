@@ -9,6 +9,8 @@ import '../src/domains/scenes/schemas';
 import '../src/domains/automations/schemas';
 import '../src/domains/energy/schemas';
 import '../src/domains/security/schemas';
+import '../src/domains/sdui/schemas';
+import '../src/domains/sync/schemas';
 
 async function exportSpec() {
     console.log('Generating OpenAPI 3.1 Specification...');

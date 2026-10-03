@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "ABS Smart Home Backend Gateway API",
-        "version": "1.2.1",
+        "version": "1.5.0",
         "description": "Unified IoT control plane, automation engine, and energy monitoring backend for Philips Hue, Google Nest, SwitchBot, Ring, and Amazon Blink.",
         "contact": {
             "name": "ABS Smart Home Engineering",
@@ -1146,6 +1146,1415 @@
                     "zones",
                     "activeIncidentsCount",
                     "recentIncidents"
+                ]
+            },
+            "SDUIAction": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "NAVIGATE",
+                            "EXECUTE_COMMAND",
+                            "ARM_SECURITY",
+                            "TRIGGER_AUTOMATION",
+                            "REFRESH",
+                            "OPEN_URL"
+                        ]
+                    },
+                    "target": {
+                        "type": "string"
+                    },
+                    "deviceId": {
+                        "type": "string"
+                    },
+                    "command": {
+                        "type": "string"
+                    },
+                    "params": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    }
+                },
+                "required": [
+                    "type"
+                ]
+            },
+            "SDUIComponent": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "WEATHER_HEADER",
+                            "SECURITY_STATUS",
+                            "STAT_TILE",
+                            "DEVICE_CARD",
+                            "THERMOSTAT_DIAL",
+                            "CAMERA_TILE",
+                            "SHORTCUT_BUTTON",
+                            "AUTOMATION_ROW"
+                        ]
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": "string"
+                    },
+                    "icon": {
+                        "type": "string"
+                    },
+                    "color": {
+                        "type": "string"
+                    },
+                    "secondaryLabel": {
+                        "type": "string"
+                    },
+                    "deviceId": {
+                        "type": "string"
+                    },
+                    "vendor": {
+                        "type": "string"
+                    },
+                    "deviceType": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "subtitle": {
+                        "type": "string"
+                    },
+                    "isOn": {
+                        "type": "boolean"
+                    },
+                    "isOnline": {
+                        "type": "boolean"
+                    },
+                    "batteryPercent": {
+                        "type": "number"
+                    },
+                    "temperature": {
+                        "type": "number"
+                    },
+                    "ambientTemp": {
+                        "type": "number"
+                    },
+                    "targetTemp": {
+                        "type": "number"
+                    },
+                    "mode": {
+                        "type": "string"
+                    },
+                    "isEco": {
+                        "type": "boolean"
+                    },
+                    "minTemp": {
+                        "type": "number"
+                    },
+                    "maxTemp": {
+                        "type": "number"
+                    },
+                    "locationName": {
+                        "type": "string"
+                    },
+                    "conditionText": {
+                        "type": "string"
+                    },
+                    "conditionIcon": {
+                        "type": "string"
+                    },
+                    "humidity": {
+                        "type": "number"
+                    },
+                    "windSpeed": {
+                        "type": "number"
+                    },
+                    "feelsLike": {
+                        "type": "number"
+                    },
+                    "armStatus": {
+                        "type": "string"
+                    },
+                    "activeAlertsCount": {
+                        "type": "number"
+                    },
+                    "badgeText": {
+                        "type": "string"
+                    },
+                    "snapshotUrl": {
+                        "type": "string"
+                    },
+                    "isLive": {
+                        "type": "boolean"
+                    },
+                    "isArmed": {
+                        "type": "boolean"
+                    },
+                    "variant": {
+                        "type": "string"
+                    },
+                    "automationId": {
+                        "type": "string"
+                    },
+                    "triggerType": {
+                        "type": "string"
+                    },
+                    "isEnabled": {
+                        "type": "boolean"
+                    },
+                    "action": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "NAVIGATE",
+                                    "EXECUTE_COMMAND",
+                                    "ARM_SECURITY",
+                                    "TRIGGER_AUTOMATION",
+                                    "REFRESH",
+                                    "OPEN_URL"
+                                ]
+                            },
+                            "target": {
+                                "type": "string"
+                            },
+                            "deviceId": {
+                                "type": "string"
+                            },
+                            "command": {
+                                "type": "string"
+                            },
+                            "params": {
+                                "type": "object",
+                                "additionalProperties": {}
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "primaryAction": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "NAVIGATE",
+                                    "EXECUTE_COMMAND",
+                                    "ARM_SECURITY",
+                                    "TRIGGER_AUTOMATION",
+                                    "REFRESH",
+                                    "OPEN_URL"
+                                ]
+                            },
+                            "target": {
+                                "type": "string"
+                            },
+                            "deviceId": {
+                                "type": "string"
+                            },
+                            "command": {
+                                "type": "string"
+                            },
+                            "params": {
+                                "type": "object",
+                                "additionalProperties": {}
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "secondaryAction": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "NAVIGATE",
+                                    "EXECUTE_COMMAND",
+                                    "ARM_SECURITY",
+                                    "TRIGGER_AUTOMATION",
+                                    "REFRESH",
+                                    "OPEN_URL"
+                                ]
+                            },
+                            "target": {
+                                "type": "string"
+                            },
+                            "deviceId": {
+                                "type": "string"
+                            },
+                            "command": {
+                                "type": "string"
+                            },
+                            "params": {
+                                "type": "object",
+                                "additionalProperties": {}
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "NAVIGATE",
+                                        "EXECUTE_COMMAND",
+                                        "ARM_SECURITY",
+                                        "TRIGGER_AUTOMATION",
+                                        "REFRESH",
+                                        "OPEN_URL"
+                                    ]
+                                },
+                                "target": {
+                                    "type": "string"
+                                },
+                                "deviceId": {
+                                    "type": "string"
+                                },
+                                "command": {
+                                    "type": "string"
+                                },
+                                "params": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            },
+                            "required": [
+                                "type"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "type"
+                ]
+            },
+            "SDUISection": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "HERO_WEATHER",
+                            "SECURITY_BANNER",
+                            "ENERGY_OVERVIEW",
+                            "QUICK_SHORTCUTS",
+                            "DEVICE_GRID",
+                            "UNIFIED_CAMERAS",
+                            "AUTOMATIONS_LIST",
+                            "EMPTY_STATE"
+                        ]
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "subtitle": {
+                        "type": "string"
+                    },
+                    "order": {
+                        "type": "number",
+                        "default": 0
+                    },
+                    "columns": {
+                        "type": "number"
+                    },
+                    "components": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "WEATHER_HEADER",
+                                        "SECURITY_STATUS",
+                                        "STAT_TILE",
+                                        "DEVICE_CARD",
+                                        "THERMOSTAT_DIAL",
+                                        "CAMERA_TILE",
+                                        "SHORTCUT_BUTTON",
+                                        "AUTOMATION_ROW"
+                                    ]
+                                },
+                                "label": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                },
+                                "unit": {
+                                    "type": "string"
+                                },
+                                "icon": {
+                                    "type": "string"
+                                },
+                                "color": {
+                                    "type": "string"
+                                },
+                                "secondaryLabel": {
+                                    "type": "string"
+                                },
+                                "deviceId": {
+                                    "type": "string"
+                                },
+                                "vendor": {
+                                    "type": "string"
+                                },
+                                "deviceType": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "subtitle": {
+                                    "type": "string"
+                                },
+                                "isOn": {
+                                    "type": "boolean"
+                                },
+                                "isOnline": {
+                                    "type": "boolean"
+                                },
+                                "batteryPercent": {
+                                    "type": "number"
+                                },
+                                "temperature": {
+                                    "type": "number"
+                                },
+                                "ambientTemp": {
+                                    "type": "number"
+                                },
+                                "targetTemp": {
+                                    "type": "number"
+                                },
+                                "mode": {
+                                    "type": "string"
+                                },
+                                "isEco": {
+                                    "type": "boolean"
+                                },
+                                "minTemp": {
+                                    "type": "number"
+                                },
+                                "maxTemp": {
+                                    "type": "number"
+                                },
+                                "locationName": {
+                                    "type": "string"
+                                },
+                                "conditionText": {
+                                    "type": "string"
+                                },
+                                "conditionIcon": {
+                                    "type": "string"
+                                },
+                                "humidity": {
+                                    "type": "number"
+                                },
+                                "windSpeed": {
+                                    "type": "number"
+                                },
+                                "feelsLike": {
+                                    "type": "number"
+                                },
+                                "armStatus": {
+                                    "type": "string"
+                                },
+                                "activeAlertsCount": {
+                                    "type": "number"
+                                },
+                                "badgeText": {
+                                    "type": "string"
+                                },
+                                "snapshotUrl": {
+                                    "type": "string"
+                                },
+                                "isLive": {
+                                    "type": "boolean"
+                                },
+                                "isArmed": {
+                                    "type": "boolean"
+                                },
+                                "variant": {
+                                    "type": "string"
+                                },
+                                "automationId": {
+                                    "type": "string"
+                                },
+                                "triggerType": {
+                                    "type": "string"
+                                },
+                                "isEnabled": {
+                                    "type": "boolean"
+                                },
+                                "action": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "NAVIGATE",
+                                                "EXECUTE_COMMAND",
+                                                "ARM_SECURITY",
+                                                "TRIGGER_AUTOMATION",
+                                                "REFRESH",
+                                                "OPEN_URL"
+                                            ]
+                                        },
+                                        "target": {
+                                            "type": "string"
+                                        },
+                                        "deviceId": {
+                                            "type": "string"
+                                        },
+                                        "command": {
+                                            "type": "string"
+                                        },
+                                        "params": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "type"
+                                    ]
+                                },
+                                "primaryAction": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "NAVIGATE",
+                                                "EXECUTE_COMMAND",
+                                                "ARM_SECURITY",
+                                                "TRIGGER_AUTOMATION",
+                                                "REFRESH",
+                                                "OPEN_URL"
+                                            ]
+                                        },
+                                        "target": {
+                                            "type": "string"
+                                        },
+                                        "deviceId": {
+                                            "type": "string"
+                                        },
+                                        "command": {
+                                            "type": "string"
+                                        },
+                                        "params": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "type"
+                                    ]
+                                },
+                                "secondaryAction": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "NAVIGATE",
+                                                "EXECUTE_COMMAND",
+                                                "ARM_SECURITY",
+                                                "TRIGGER_AUTOMATION",
+                                                "REFRESH",
+                                                "OPEN_URL"
+                                            ]
+                                        },
+                                        "target": {
+                                            "type": "string"
+                                        },
+                                        "deviceId": {
+                                            "type": "string"
+                                        },
+                                        "command": {
+                                            "type": "string"
+                                        },
+                                        "params": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "type"
+                                    ]
+                                },
+                                "actions": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "NAVIGATE",
+                                                    "EXECUTE_COMMAND",
+                                                    "ARM_SECURITY",
+                                                    "TRIGGER_AUTOMATION",
+                                                    "REFRESH",
+                                                    "OPEN_URL"
+                                                ]
+                                            },
+                                            "target": {
+                                                "type": "string"
+                                            },
+                                            "deviceId": {
+                                                "type": "string"
+                                            },
+                                            "command": {
+                                                "type": "string"
+                                            },
+                                            "params": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            }
+                                        },
+                                        "required": [
+                                            "type"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "type"
+                            ]
+                        },
+                        "default": []
+                    }
+                },
+                "required": [
+                    "id",
+                    "type"
+                ]
+            },
+            "SDUIPage": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string",
+                        "default": "1.4.0"
+                    },
+                    "generatedAt": {
+                        "type": "string"
+                    },
+                    "refreshIntervalSeconds": {
+                        "type": "number",
+                        "default": 15
+                    },
+                    "sections": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "HERO_WEATHER",
+                                        "SECURITY_BANNER",
+                                        "ENERGY_OVERVIEW",
+                                        "QUICK_SHORTCUTS",
+                                        "DEVICE_GRID",
+                                        "UNIFIED_CAMERAS",
+                                        "AUTOMATIONS_LIST",
+                                        "EMPTY_STATE"
+                                    ]
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "subtitle": {
+                                    "type": "string"
+                                },
+                                "order": {
+                                    "type": "number",
+                                    "default": 0
+                                },
+                                "columns": {
+                                    "type": "number"
+                                },
+                                "components": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "WEATHER_HEADER",
+                                                    "SECURITY_STATUS",
+                                                    "STAT_TILE",
+                                                    "DEVICE_CARD",
+                                                    "THERMOSTAT_DIAL",
+                                                    "CAMERA_TILE",
+                                                    "SHORTCUT_BUTTON",
+                                                    "AUTOMATION_ROW"
+                                                ]
+                                            },
+                                            "label": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            },
+                                            "unit": {
+                                                "type": "string"
+                                            },
+                                            "icon": {
+                                                "type": "string"
+                                            },
+                                            "color": {
+                                                "type": "string"
+                                            },
+                                            "secondaryLabel": {
+                                                "type": "string"
+                                            },
+                                            "deviceId": {
+                                                "type": "string"
+                                            },
+                                            "vendor": {
+                                                "type": "string"
+                                            },
+                                            "deviceType": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "subtitle": {
+                                                "type": "string"
+                                            },
+                                            "isOn": {
+                                                "type": "boolean"
+                                            },
+                                            "isOnline": {
+                                                "type": "boolean"
+                                            },
+                                            "batteryPercent": {
+                                                "type": "number"
+                                            },
+                                            "temperature": {
+                                                "type": "number"
+                                            },
+                                            "ambientTemp": {
+                                                "type": "number"
+                                            },
+                                            "targetTemp": {
+                                                "type": "number"
+                                            },
+                                            "mode": {
+                                                "type": "string"
+                                            },
+                                            "isEco": {
+                                                "type": "boolean"
+                                            },
+                                            "minTemp": {
+                                                "type": "number"
+                                            },
+                                            "maxTemp": {
+                                                "type": "number"
+                                            },
+                                            "locationName": {
+                                                "type": "string"
+                                            },
+                                            "conditionText": {
+                                                "type": "string"
+                                            },
+                                            "conditionIcon": {
+                                                "type": "string"
+                                            },
+                                            "humidity": {
+                                                "type": "number"
+                                            },
+                                            "windSpeed": {
+                                                "type": "number"
+                                            },
+                                            "feelsLike": {
+                                                "type": "number"
+                                            },
+                                            "armStatus": {
+                                                "type": "string"
+                                            },
+                                            "activeAlertsCount": {
+                                                "type": "number"
+                                            },
+                                            "badgeText": {
+                                                "type": "string"
+                                            },
+                                            "snapshotUrl": {
+                                                "type": "string"
+                                            },
+                                            "isLive": {
+                                                "type": "boolean"
+                                            },
+                                            "isArmed": {
+                                                "type": "boolean"
+                                            },
+                                            "variant": {
+                                                "type": "string"
+                                            },
+                                            "automationId": {
+                                                "type": "string"
+                                            },
+                                            "triggerType": {
+                                                "type": "string"
+                                            },
+                                            "isEnabled": {
+                                                "type": "boolean"
+                                            },
+                                            "action": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "NAVIGATE",
+                                                            "EXECUTE_COMMAND",
+                                                            "ARM_SECURITY",
+                                                            "TRIGGER_AUTOMATION",
+                                                            "REFRESH",
+                                                            "OPEN_URL"
+                                                        ]
+                                                    },
+                                                    "target": {
+                                                        "type": "string"
+                                                    },
+                                                    "deviceId": {
+                                                        "type": "string"
+                                                    },
+                                                    "command": {
+                                                        "type": "string"
+                                                    },
+                                                    "params": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    }
+                                                },
+                                                "required": [
+                                                    "type"
+                                                ]
+                                            },
+                                            "primaryAction": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "NAVIGATE",
+                                                            "EXECUTE_COMMAND",
+                                                            "ARM_SECURITY",
+                                                            "TRIGGER_AUTOMATION",
+                                                            "REFRESH",
+                                                            "OPEN_URL"
+                                                        ]
+                                                    },
+                                                    "target": {
+                                                        "type": "string"
+                                                    },
+                                                    "deviceId": {
+                                                        "type": "string"
+                                                    },
+                                                    "command": {
+                                                        "type": "string"
+                                                    },
+                                                    "params": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    }
+                                                },
+                                                "required": [
+                                                    "type"
+                                                ]
+                                            },
+                                            "secondaryAction": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "NAVIGATE",
+                                                            "EXECUTE_COMMAND",
+                                                            "ARM_SECURITY",
+                                                            "TRIGGER_AUTOMATION",
+                                                            "REFRESH",
+                                                            "OPEN_URL"
+                                                        ]
+                                                    },
+                                                    "target": {
+                                                        "type": "string"
+                                                    },
+                                                    "deviceId": {
+                                                        "type": "string"
+                                                    },
+                                                    "command": {
+                                                        "type": "string"
+                                                    },
+                                                    "params": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    }
+                                                },
+                                                "required": [
+                                                    "type"
+                                                ]
+                                            },
+                                            "actions": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "NAVIGATE",
+                                                                "EXECUTE_COMMAND",
+                                                                "ARM_SECURITY",
+                                                                "TRIGGER_AUTOMATION",
+                                                                "REFRESH",
+                                                                "OPEN_URL"
+                                                            ]
+                                                        },
+                                                        "target": {
+                                                            "type": "string"
+                                                        },
+                                                        "deviceId": {
+                                                            "type": "string"
+                                                        },
+                                                        "command": {
+                                                            "type": "string"
+                                                        },
+                                                        "params": {
+                                                            "type": "object",
+                                                            "additionalProperties": {}
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "type"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "type"
+                                        ]
+                                    },
+                                    "default": []
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "type"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "title",
+                    "generatedAt",
+                    "sections"
+                ]
+            },
+            "SeedUserDataRequest": {
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                    },
+                    "exportedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "clientPlatform": {
+                        "type": "string",
+                        "default": "ComposeMultiplatform"
+                    },
+                    "clientVersion": {
+                        "type": "string",
+                        "default": "unknown"
+                    },
+                    "environment": {
+                        "type": "string",
+                        "default": "local"
+                    },
+                    "devices": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "externalId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                },
+                                "vendor": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 40
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 40
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                },
+                                "roomName": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "maxLength": 200
+                                },
+                                "capabilities": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "default": []
+                                },
+                                "state": {
+                                    "type": "object",
+                                    "additionalProperties": {},
+                                    "default": {}
+                                },
+                                "isOnline": {
+                                    "type": "boolean",
+                                    "default": true
+                                }
+                            },
+                            "required": [
+                                "externalId",
+                                "vendor",
+                                "type",
+                                "name"
+                            ]
+                        },
+                        "maxItems": 500,
+                        "default": []
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                },
+                                "icon": {
+                                    "type": "string",
+                                    "default": "sofa"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "name"
+                            ]
+                        },
+                        "maxItems": 100,
+                        "default": []
+                    },
+                    "routines": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                },
+                                "isEnabled": {
+                                    "type": "boolean",
+                                    "default": true
+                                },
+                                "triggerType": {
+                                    "type": "string",
+                                    "default": "MANUAL"
+                                },
+                                "executionCount": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "default": 0
+                                },
+                                "actions": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "targetVendor": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "actionType": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "parameters": {
+                                                "type": "object",
+                                                "additionalProperties": {},
+                                                "default": {}
+                                            }
+                                        },
+                                        "required": [
+                                            "targetVendor",
+                                            "actionType"
+                                        ]
+                                    },
+                                    "default": []
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "name"
+                            ]
+                        },
+                        "maxItems": 100,
+                        "default": []
+                    },
+                    "userPreferences": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "darkTheme": {
+                                "type": "string",
+                                "default": "SYSTEM"
+                            },
+                            "language": {
+                                "type": "string",
+                                "default": "SYSTEM"
+                            },
+                            "experienceMode": {
+                                "type": "string",
+                                "default": "STANDARD"
+                            },
+                            "biometricLockEnabled": {
+                                "type": "boolean",
+                                "default": false
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "userId",
+                    "exportedAt"
+                ]
+            },
+            "SeedUserDataResult": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "enum": [
+                            true
+                        ]
+                    },
+                    "seededAt": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                    },
+                    "summary": {
+                        "type": "object",
+                        "properties": {
+                            "devicesSeeded": {
+                                "type": "integer"
+                            },
+                            "roomsSeeded": {
+                                "type": "integer"
+                            },
+                            "routinesSeeded": {
+                                "type": "integer"
+                            },
+                            "preferencesUpdated": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "devicesSeeded",
+                            "roomsSeeded",
+                            "routinesSeeded",
+                            "preferencesUpdated"
+                        ]
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "success",
+                    "seededAt",
+                    "userId",
+                    "summary",
+                    "message"
+                ]
+            },
+            "SyncedUserSnapshot": {
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                    },
+                    "exportedAt": {
+                        "type": "string"
+                    },
+                    "seededAt": {
+                        "type": "string"
+                    },
+                    "clientPlatform": {
+                        "type": "string"
+                    },
+                    "clientVersion": {
+                        "type": "string"
+                    },
+                    "environment": {
+                        "type": "string"
+                    },
+                    "devices": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "externalId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                },
+                                "vendor": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 40
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 40
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                },
+                                "roomName": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "maxLength": 200
+                                },
+                                "capabilities": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "default": []
+                                },
+                                "state": {
+                                    "type": "object",
+                                    "additionalProperties": {},
+                                    "default": {}
+                                },
+                                "isOnline": {
+                                    "type": "boolean",
+                                    "default": true
+                                }
+                            },
+                            "required": [
+                                "externalId",
+                                "vendor",
+                                "type",
+                                "name"
+                            ]
+                        }
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                },
+                                "icon": {
+                                    "type": "string",
+                                    "default": "sofa"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "name"
+                            ]
+                        }
+                    },
+                    "routines": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                },
+                                "isEnabled": {
+                                    "type": "boolean",
+                                    "default": true
+                                },
+                                "triggerType": {
+                                    "type": "string",
+                                    "default": "MANUAL"
+                                },
+                                "executionCount": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "default": 0
+                                },
+                                "actions": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "targetVendor": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "actionType": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "parameters": {
+                                                "type": "object",
+                                                "additionalProperties": {},
+                                                "default": {}
+                                            }
+                                        },
+                                        "required": [
+                                            "targetVendor",
+                                            "actionType"
+                                        ]
+                                    },
+                                    "default": []
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "name"
+                            ]
+                        }
+                    },
+                    "userPreferences": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "darkTheme": {
+                                "type": "string",
+                                "default": "SYSTEM"
+                            },
+                            "language": {
+                                "type": "string",
+                                "default": "SYSTEM"
+                            },
+                            "experienceMode": {
+                                "type": "string",
+                                "default": "STANDARD"
+                            },
+                            "biometricLockEnabled": {
+                                "type": "boolean",
+                                "default": false
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "userId",
+                    "exportedAt",
+                    "seededAt",
+                    "clientPlatform",
+                    "clientVersion",
+                    "environment",
+                    "devices",
+                    "rooms",
+                    "routines",
+                    "userPreferences"
                 ]
             }
         },
@@ -3096,6 +4505,895 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/sdui/dashboard": {
+            "get": {
+                "tags": [
+                    "SDUI"
+                ],
+                "summary": "Get Server-Driven UI Dashboard Layout",
+                "description": "Returns the complete dynamic Server-Driven UI layout tree composed of real-time IoT domain states.",
+                "responses": {
+                    "200": {
+                        "description": "SDUI Dashboard layout retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "default": "1.4.0"
+                                        },
+                                        "generatedAt": {
+                                            "type": "string"
+                                        },
+                                        "refreshIntervalSeconds": {
+                                            "type": "number",
+                                            "default": 15
+                                        },
+                                        "sections": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "HERO_WEATHER",
+                                                            "SECURITY_BANNER",
+                                                            "ENERGY_OVERVIEW",
+                                                            "QUICK_SHORTCUTS",
+                                                            "DEVICE_GRID",
+                                                            "UNIFIED_CAMERAS",
+                                                            "AUTOMATIONS_LIST",
+                                                            "EMPTY_STATE"
+                                                        ]
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "subtitle": {
+                                                        "type": "string"
+                                                    },
+                                                    "order": {
+                                                        "type": "number",
+                                                        "default": 0
+                                                    },
+                                                    "columns": {
+                                                        "type": "number"
+                                                    },
+                                                    "components": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "string"
+                                                                },
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "WEATHER_HEADER",
+                                                                        "SECURITY_STATUS",
+                                                                        "STAT_TILE",
+                                                                        "DEVICE_CARD",
+                                                                        "THERMOSTAT_DIAL",
+                                                                        "CAMERA_TILE",
+                                                                        "SHORTCUT_BUTTON",
+                                                                        "AUTOMATION_ROW"
+                                                                    ]
+                                                                },
+                                                                "label": {
+                                                                    "type": "string"
+                                                                },
+                                                                "value": {
+                                                                    "type": "string"
+                                                                },
+                                                                "unit": {
+                                                                    "type": "string"
+                                                                },
+                                                                "icon": {
+                                                                    "type": "string"
+                                                                },
+                                                                "color": {
+                                                                    "type": "string"
+                                                                },
+                                                                "secondaryLabel": {
+                                                                    "type": "string"
+                                                                },
+                                                                "deviceId": {
+                                                                    "type": "string"
+                                                                },
+                                                                "vendor": {
+                                                                    "type": "string"
+                                                                },
+                                                                "deviceType": {
+                                                                    "type": "string"
+                                                                },
+                                                                "name": {
+                                                                    "type": "string"
+                                                                },
+                                                                "subtitle": {
+                                                                    "type": "string"
+                                                                },
+                                                                "isOn": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "isOnline": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "batteryPercent": {
+                                                                    "type": "number"
+                                                                },
+                                                                "temperature": {
+                                                                    "type": "number"
+                                                                },
+                                                                "ambientTemp": {
+                                                                    "type": "number"
+                                                                },
+                                                                "targetTemp": {
+                                                                    "type": "number"
+                                                                },
+                                                                "mode": {
+                                                                    "type": "string"
+                                                                },
+                                                                "isEco": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "minTemp": {
+                                                                    "type": "number"
+                                                                },
+                                                                "maxTemp": {
+                                                                    "type": "number"
+                                                                },
+                                                                "locationName": {
+                                                                    "type": "string"
+                                                                },
+                                                                "conditionText": {
+                                                                    "type": "string"
+                                                                },
+                                                                "conditionIcon": {
+                                                                    "type": "string"
+                                                                },
+                                                                "humidity": {
+                                                                    "type": "number"
+                                                                },
+                                                                "windSpeed": {
+                                                                    "type": "number"
+                                                                },
+                                                                "feelsLike": {
+                                                                    "type": "number"
+                                                                },
+                                                                "armStatus": {
+                                                                    "type": "string"
+                                                                },
+                                                                "activeAlertsCount": {
+                                                                    "type": "number"
+                                                                },
+                                                                "badgeText": {
+                                                                    "type": "string"
+                                                                },
+                                                                "snapshotUrl": {
+                                                                    "type": "string"
+                                                                },
+                                                                "isLive": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "isArmed": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "variant": {
+                                                                    "type": "string"
+                                                                },
+                                                                "automationId": {
+                                                                    "type": "string"
+                                                                },
+                                                                "triggerType": {
+                                                                    "type": "string"
+                                                                },
+                                                                "isEnabled": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "action": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "type": {
+                                                                            "type": "string",
+                                                                            "enum": [
+                                                                                "NAVIGATE",
+                                                                                "EXECUTE_COMMAND",
+                                                                                "ARM_SECURITY",
+                                                                                "TRIGGER_AUTOMATION",
+                                                                                "REFRESH",
+                                                                                "OPEN_URL"
+                                                                            ]
+                                                                        },
+                                                                        "target": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "deviceId": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "command": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "params": {
+                                                                            "type": "object",
+                                                                            "additionalProperties": {}
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "type"
+                                                                    ]
+                                                                },
+                                                                "primaryAction": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "type": {
+                                                                            "type": "string",
+                                                                            "enum": [
+                                                                                "NAVIGATE",
+                                                                                "EXECUTE_COMMAND",
+                                                                                "ARM_SECURITY",
+                                                                                "TRIGGER_AUTOMATION",
+                                                                                "REFRESH",
+                                                                                "OPEN_URL"
+                                                                            ]
+                                                                        },
+                                                                        "target": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "deviceId": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "command": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "params": {
+                                                                            "type": "object",
+                                                                            "additionalProperties": {}
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "type"
+                                                                    ]
+                                                                },
+                                                                "secondaryAction": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "type": {
+                                                                            "type": "string",
+                                                                            "enum": [
+                                                                                "NAVIGATE",
+                                                                                "EXECUTE_COMMAND",
+                                                                                "ARM_SECURITY",
+                                                                                "TRIGGER_AUTOMATION",
+                                                                                "REFRESH",
+                                                                                "OPEN_URL"
+                                                                            ]
+                                                                        },
+                                                                        "target": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "deviceId": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "command": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "params": {
+                                                                            "type": "object",
+                                                                            "additionalProperties": {}
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "type"
+                                                                    ]
+                                                                },
+                                                                "actions": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "type": {
+                                                                                "type": "string",
+                                                                                "enum": [
+                                                                                    "NAVIGATE",
+                                                                                    "EXECUTE_COMMAND",
+                                                                                    "ARM_SECURITY",
+                                                                                    "TRIGGER_AUTOMATION",
+                                                                                    "REFRESH",
+                                                                                    "OPEN_URL"
+                                                                                ]
+                                                                            },
+                                                                            "target": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "deviceId": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "command": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "params": {
+                                                                                "type": "object",
+                                                                                "additionalProperties": {}
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "type"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "id",
+                                                                "type"
+                                                            ]
+                                                        },
+                                                        "default": []
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "type"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "title",
+                                        "generatedAt",
+                                        "sections"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sync/seed": {
+            "post": {
+                "tags": [
+                    "Sync"
+                ],
+                "summary": "Seed user data exported by the mobile app",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "userId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 128
+                                    },
+                                    "exportedAt": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "clientPlatform": {
+                                        "type": "string",
+                                        "default": "ComposeMultiplatform"
+                                    },
+                                    "clientVersion": {
+                                        "type": "string",
+                                        "default": "unknown"
+                                    },
+                                    "environment": {
+                                        "type": "string",
+                                        "default": "local"
+                                    },
+                                    "devices": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "externalId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 200
+                                                },
+                                                "vendor": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 40
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 40
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 200
+                                                },
+                                                "roomName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "maxLength": 200
+                                                },
+                                                "capabilities": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "default": []
+                                                },
+                                                "state": {
+                                                    "type": "object",
+                                                    "additionalProperties": {},
+                                                    "default": {}
+                                                },
+                                                "isOnline": {
+                                                    "type": "boolean",
+                                                    "default": true
+                                                }
+                                            },
+                                            "required": [
+                                                "externalId",
+                                                "vendor",
+                                                "type",
+                                                "name"
+                                            ]
+                                        },
+                                        "maxItems": 500,
+                                        "default": []
+                                    },
+                                    "rooms": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 128
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 200
+                                                },
+                                                "icon": {
+                                                    "type": "string",
+                                                    "default": "sofa"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name"
+                                            ]
+                                        },
+                                        "maxItems": 100,
+                                        "default": []
+                                    },
+                                    "routines": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 128
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 200
+                                                },
+                                                "isEnabled": {
+                                                    "type": "boolean",
+                                                    "default": true
+                                                },
+                                                "triggerType": {
+                                                    "type": "string",
+                                                    "default": "MANUAL"
+                                                },
+                                                "executionCount": {
+                                                    "type": "integer",
+                                                    "minimum": 0,
+                                                    "default": 0
+                                                },
+                                                "actions": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "targetVendor": {
+                                                                "type": "string",
+                                                                "minLength": 1
+                                                            },
+                                                            "actionType": {
+                                                                "type": "string",
+                                                                "minLength": 1
+                                                            },
+                                                            "parameters": {
+                                                                "type": "object",
+                                                                "additionalProperties": {},
+                                                                "default": {}
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "targetVendor",
+                                                            "actionType"
+                                                        ]
+                                                    },
+                                                    "default": []
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name"
+                                            ]
+                                        },
+                                        "maxItems": 100,
+                                        "default": []
+                                    },
+                                    "userPreferences": {
+                                        "type": [
+                                            "object",
+                                            "null"
+                                        ],
+                                        "properties": {
+                                            "darkTheme": {
+                                                "type": "string",
+                                                "default": "SYSTEM"
+                                            },
+                                            "language": {
+                                                "type": "string",
+                                                "default": "SYSTEM"
+                                            },
+                                            "experienceMode": {
+                                                "type": "string",
+                                                "default": "STANDARD"
+                                            },
+                                            "biometricLockEnabled": {
+                                                "type": "boolean",
+                                                "default": false
+                                            }
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "userId",
+                                    "exportedAt"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User data seeded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "enum": [
+                                                true
+                                            ]
+                                        },
+                                        "seededAt": {
+                                            "type": "string"
+                                        },
+                                        "userId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 128
+                                        },
+                                        "summary": {
+                                            "type": "object",
+                                            "properties": {
+                                                "devicesSeeded": {
+                                                    "type": "integer"
+                                                },
+                                                "roomsSeeded": {
+                                                    "type": "integer"
+                                                },
+                                                "routinesSeeded": {
+                                                    "type": "integer"
+                                                },
+                                                "preferencesUpdated": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "devicesSeeded",
+                                                "roomsSeeded",
+                                                "routinesSeeded",
+                                                "preferencesUpdated"
+                                            ]
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "seededAt",
+                                        "userId",
+                                        "summary",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing or invalid Firebase ID token"
+                    },
+                    "403": {
+                        "description": "Token user does not match the export user"
+                    },
+                    "422": {
+                        "description": "Invalid mobile export"
+                    }
+                }
+            }
+        },
+        "/sync/users/{userId}": {
+            "get": {
+                "tags": [
+                    "Sync"
+                ],
+                "summary": "Inspect a user data export",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                        },
+                        "required": true,
+                        "name": "userId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User export found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "userId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 128
+                                        },
+                                        "exportedAt": {
+                                            "type": "string"
+                                        },
+                                        "seededAt": {
+                                            "type": "string"
+                                        },
+                                        "clientPlatform": {
+                                            "type": "string"
+                                        },
+                                        "clientVersion": {
+                                            "type": "string"
+                                        },
+                                        "environment": {
+                                            "type": "string"
+                                        },
+                                        "devices": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "externalId": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 200
+                                                    },
+                                                    "vendor": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 40
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 40
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 200
+                                                    },
+                                                    "roomName": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ],
+                                                        "maxLength": 200
+                                                    },
+                                                    "capabilities": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "default": []
+                                                    },
+                                                    "state": {
+                                                        "type": "object",
+                                                        "additionalProperties": {},
+                                                        "default": {}
+                                                    },
+                                                    "isOnline": {
+                                                        "type": "boolean",
+                                                        "default": true
+                                                    }
+                                                },
+                                                "required": [
+                                                    "externalId",
+                                                    "vendor",
+                                                    "type",
+                                                    "name"
+                                                ]
+                                            }
+                                        },
+                                        "rooms": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 128
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 200
+                                                    },
+                                                    "icon": {
+                                                        "type": "string",
+                                                        "default": "sofa"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "name"
+                                                ]
+                                            }
+                                        },
+                                        "routines": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 128
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 200
+                                                    },
+                                                    "isEnabled": {
+                                                        "type": "boolean",
+                                                        "default": true
+                                                    },
+                                                    "triggerType": {
+                                                        "type": "string",
+                                                        "default": "MANUAL"
+                                                    },
+                                                    "executionCount": {
+                                                        "type": "integer",
+                                                        "minimum": 0,
+                                                        "default": 0
+                                                    },
+                                                    "actions": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "targetVendor": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "actionType": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "parameters": {
+                                                                    "type": "object",
+                                                                    "additionalProperties": {},
+                                                                    "default": {}
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "targetVendor",
+                                                                "actionType"
+                                                            ]
+                                                        },
+                                                        "default": []
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "name"
+                                                ]
+                                            }
+                                        },
+                                        "userPreferences": {
+                                            "type": [
+                                                "object",
+                                                "null"
+                                            ],
+                                            "properties": {
+                                                "darkTheme": {
+                                                    "type": "string",
+                                                    "default": "SYSTEM"
+                                                },
+                                                "language": {
+                                                    "type": "string",
+                                                    "default": "SYSTEM"
+                                                },
+                                                "experienceMode": {
+                                                    "type": "string",
+                                                    "default": "STANDARD"
+                                                },
+                                                "biometricLockEnabled": {
+                                                    "type": "boolean",
+                                                    "default": false
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "userId",
+                                        "exportedAt",
+                                        "seededAt",
+                                        "clientPlatform",
+                                        "clientVersion",
+                                        "environment",
+                                        "devices",
+                                        "rooms",
+                                        "routines",
+                                        "userPreferences"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing or invalid Firebase ID token"
+                    },
+                    "403": {
+                        "description": "Token user does not match the requested user"
+                    },
+                    "404": {
+                        "description": "No export found for this user"
                     }
                 }
             }

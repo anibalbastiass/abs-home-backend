@@ -22,6 +22,7 @@ import { EnergyService, EnergyServiceImpl } from '@/domains/energy/service';
 import { SecurityService, SecurityServiceImpl } from '@/domains/security/service';
 import { SduiService, SduiServiceImpl } from '@/domains/sdui/service';
 import { SyncService, SyncServiceImpl } from '@/domains/sync/service';
+import { FirebaseTokenVerifier, TokenVerifier } from '@/domains/sync/token-verifier';
 
 // Controllers
 import { HealthController } from '@/domains/health/controller';
@@ -58,6 +59,7 @@ export interface AppContainer {
     securityService: SecurityService;
     sduiService: SduiService;
     syncService: SyncService;
+    syncTokenVerifier: TokenVerifier;
 
     // Controllers
     healthController: HealthController;
@@ -90,6 +92,7 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
     const securitySvc = overrides.securityService || new SecurityServiceImpl(db, km);
     const sduiSvc = overrides.sduiService || new SduiServiceImpl(deviceSvc, securitySvc, energySvc, autoSvc);
     const syncSvc = overrides.syncService || new SyncServiceImpl(db);
+    const tokenVerifier = overrides.syncTokenVerifier || new FirebaseTokenVerifier(config.FIREBASE_PROJECT_ID);
 
     const wsMgr = overrides.wsManager || defaultWsManager;
     wsMgr.setDeviceService(deviceSvc);
@@ -102,7 +105,7 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
     const energyCtrl = overrides.energyController || new EnergyController(energySvc);
     const securityCtrl = overrides.securityController || new SecurityController(securitySvc);
     const sduiCtrl = overrides.sduiController || new SduiController(sduiSvc);
-    const syncCtrl = overrides.syncController || new SyncController(syncSvc);
+    const syncCtrl = overrides.syncController || new SyncController(syncSvc, tokenVerifier);
 
     return {
         env: config,
@@ -124,6 +127,7 @@ export const createContainer = (overrides: Partial<AppContainer> = {}): AppConta
         securityService: securitySvc,
         sduiService: sduiSvc,
         syncService: syncSvc,
+        syncTokenVerifier: tokenVerifier,
         healthController: healthCtrl,
         deviceController: deviceCtrl,
         sceneController: sceneCtrl,

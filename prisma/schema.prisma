@@ -102,7 +102,7 @@ model Device {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  actions      SceneAction[]
+  actions SceneAction[]
 
   @@unique([vendor, externalId])
 }
@@ -131,25 +131,25 @@ model SceneAction {
 }
 
 model AutomationRule {
-  id               String                    @id @default(uuid())
+  id               String                   @id @default(uuid())
   name             String
   description      String?
-  isEnabled        Boolean                   @default(true)
-  triggerType      String                    // e.g. "TIME_CRON", "DEVICE_EVENT", "ENERGY_THRESHOLD"
-  triggerCondition Json                      // Details of condition
-  actions          Json                      // Actions list to execute
+  isEnabled        Boolean                  @default(true)
+  triggerType      String // e.g. "TIME_CRON", "DEVICE_EVENT", "ENERGY_THRESHOLD"
+  triggerCondition Json // Details of condition
+  actions          Json // Actions list to execute
   homeId           String
-  home             Home                      @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  home             Home                     @relation(fields: [homeId], references: [id], onDelete: Cascade)
   executionLogs    AutomationExecutionLog[]
-  createdAt        DateTime                  @default(now())
-  updatedAt        DateTime                  @updatedAt
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
 }
 
 model AutomationExecutionLog {
   id           String         @id @default(uuid())
   automationId String
   automation   AutomationRule @relation(fields: [automationId], references: [id], onDelete: Cascade)
-  status       String         // "SUCCESS", "FAILED", "PARTIAL"
+  status       String // "SUCCESS", "FAILED", "PARTIAL"
   triggerEvent Json           @default("{}")
   executedAt   DateTime       @default(now())
   durationMs   Int
@@ -157,23 +157,23 @@ model AutomationExecutionLog {
 }
 
 model EnergyMetric {
-  id                 String   @id @default(uuid())
-  meterId            String
-  timestamp          DateTime @default(now())
-  phaseAVoltage      Float
-  phaseACurrent      Float
-  phaseAPower        Float
-  phaseAPowerFactor  Float
-  phaseBVoltage      Float
-  phaseBCurrent      Float
-  phaseBPower        Float
-  phaseBPowerFactor  Float
-  phaseCVoltage      Float
-  phaseCCurrent      Float
-  phaseCPower        Float
-  phaseCPowerFactor  Float
-  totalActivePower   Float
-  dailyEnergyKwh     Float
+  id                String   @id @default(uuid())
+  meterId           String
+  timestamp         DateTime @default(now())
+  phaseAVoltage     Float
+  phaseACurrent     Float
+  phaseAPower       Float
+  phaseAPowerFactor Float
+  phaseBVoltage     Float
+  phaseBCurrent     Float
+  phaseBPower       Float
+  phaseBPowerFactor Float
+  phaseCVoltage     Float
+  phaseCCurrent     Float
+  phaseCPower       Float
+  phaseCPowerFactor Float
+  totalActivePower  Float
+  dailyEnergyKwh    Float
 
   @@index([meterId, timestamp])
 }
@@ -205,4 +205,60 @@ model AuditLog {
   resource  String
   details   Json     @default("{}")
   createdAt DateTime @default(now())
+}
+
+/// A mobile export is kept separate from executable backend devices and automations.
+/// Mobile routine actions use vendor targets rather than backend device IDs.
+model SyncedUser {
+  id             String          @id
+  exportedAt     DateTime
+  seededAt       DateTime        @default(now())
+  clientPlatform String
+  clientVersion  String
+  environment    String
+  preferences    Json?
+  devices        SyncedDevice[]
+  rooms          SyncedRoom[]
+  routines       SyncedRoutine[]
+}
+
+model SyncedDevice {
+  id           String     @id @default(uuid())
+  userId       String
+  user         SyncedUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  externalId   String
+  vendor       String
+  type         String
+  name         String
+  roomName     String?
+  capabilities Json       @default("[]")
+  state        Json       @default("{}")
+  isOnline     Boolean    @default(true)
+
+  @@unique([userId, vendor, externalId])
+}
+
+model SyncedRoom {
+  id       String     @id @default(uuid())
+  userId   String
+  user     SyncedUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceId String
+  name     String
+  icon     String
+
+  @@unique([userId, sourceId])
+}
+
+model SyncedRoutine {
+  id             String     @id @default(uuid())
+  userId         String
+  user           SyncedUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceId       String
+  name           String
+  isEnabled      Boolean    @default(true)
+  triggerType    String
+  executionCount Int        @default(0)
+  actions        Json       @default("[]")
+
+  @@unique([userId, sourceId])
 }

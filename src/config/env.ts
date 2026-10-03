@@ -8,6 +8,7 @@ const envSchema = z.object({
     PORT: z.coerce.number().default(3000),
     API_PREFIX: z.string().default('/api/v1'),
     API_SECRET_KEY: z.string().default('abs_smarthome_super_secret_jwt_key_2026'),
+    FIREBASE_PROJECT_ID: z.string().default('abs-smart-home-manager'),
 
     // PostgreSQL / Prisma
     DATABASE_URL: z.string().default('postgresql://abs_admin:abs_password_secure@localhost:5432/abs_smarthome?schema=public'),
